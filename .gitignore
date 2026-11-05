@@ -1,0 +1,9 @@
+# Pastas ocultas de configuração local ficam fora; só a do painel entra.
+.*/
+!.streamlit/
+# Bytecode, ambientes virtuais e lixo de sistema de arquivos.
+__pycache__/
+*.py[cod]
+venv/
+Thumbs.db
+desktop.ini

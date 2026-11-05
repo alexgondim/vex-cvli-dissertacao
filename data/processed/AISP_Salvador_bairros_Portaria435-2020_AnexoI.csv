@@ -1,0 +1,166 @@
+﻿AISP,nome_aisp,bairro
+1,BARRIS,Garcia
+1,BARRIS,Nazaré
+1,BARRIS,Centro
+1,BARRIS,Tororó
+1,BARRIS,Barris
+1,BARRIS,Macaúbas
+1,BARRIS,Barbalho
+1,BARRIS,Saúde
+1,BARRIS,Centro Histórico
+1,BARRIS,Santo Antônio
+1,BARRIS,Canela
+1,BARRIS,Dois de Julho
+2,LIBERDADE,Lapinha
+2,LIBERDADE,Baixa de Quintas
+2,LIBERDADE,Caixa D'Água
+2,LIBERDADE,Liberdade
+2,LIBERDADE,Pero Vaz
+2,LIBERDADE,Curuzu
+2,LIBERDADE,Santa Mônica
+2,LIBERDADE,Cidade Nova
+2,LIBERDADE,Pau Miúdo
+2,LIBERDADE,IAPI
+3,BONFIM,Comércio
+3,BONFIM,Ribeira
+3,BONFIM,Massaranduba
+3,BONFIM,Santa Luzia
+3,BONFIM,Bonfim
+3,BONFIM,Mangueira
+3,BONFIM,Calçada
+3,BONFIM,Mares
+3,BONFIM,Roma
+3,BONFIM,Boa Viagem
+3,BONFIM,Uruguai
+3,BONFIM,Vila Ruy Barbosa/Jardim Cruzeiro
+3,BONFIM,Caminho de Areia
+3,BONFIM,Monte Serrat
+4,SÃO CAETANO,Retiro
+4,SÃO CAETANO,Campinas de Pirajá
+4,SÃO CAETANO,Marechal Rondon
+4,SÃO CAETANO,Capelinha
+4,SÃO CAETANO,Boa Vista de São Caetano
+4,SÃO CAETANO,São Caetano
+4,SÃO CAETANO,Fazenda Grande do Retiro
+4,SÃO CAETANO,Bom Juá
+4,SÃO CAETANO,Pirajá
+5,PERIPERI,Plataforma
+5,PERIPERI,Lobato
+5,PERIPERI,Alto do Cabrito
+5,PERIPERI,Periperi
+5,PERIPERI,Praia Grande
+5,PERIPERI,São João do Cabrito
+5,PERIPERI,Itacaranha
+5,PERIPERI,Alto da Terezinha
+5,PERIPERI,Rio Sena
+5,PERIPERI,São Tomé
+5,PERIPERI,Paripe
+5,PERIPERI,Fazenda Coutos
+5,PERIPERI,Coutos
+5,PERIPERI,Nova Constituinte
+5,PERIPERI,Ilha de Maré
+5,PERIPERI,Colinas de Periperi
+5,PERIPERI,Ilha Amarela
+5,PERIPERI,Mirantes de Periperi
+6,BROTAS,Brotas
+6,BROTAS,Vila Laura
+6,BROTAS,Luiz Anselmo
+6,BROTAS,Matatu
+6,BROTAS,Santo Agostinho
+6,BROTAS,Engenho Velho de Brotas
+6,BROTAS,Acupe
+6,BROTAS,Cosme de Farias
+6,BROTAS,Candeal
+6,BROTAS,Boa Vista de Brotas
+6,BROTAS,Horto Florestal
+7,RIO VERMELHO,Ondina
+7,RIO VERMELHO,Alto das Pombas
+7,RIO VERMELHO,Calabar
+7,RIO VERMELHO,Rio Vermelho
+7,RIO VERMELHO,Federação
+7,RIO VERMELHO,Engenho Velho da Federação
+7,RIO VERMELHO,Chame-Chame
+8,VALÉRIA,Moradas da Lagoa
+8,VALÉRIA,Valéria
+8,VALÉRIA,Palestina
+9,BOCA DO RIO,Costa Azul
+9,BOCA DO RIO,STIEP
+9,BOCA DO RIO,Pituaçu
+9,BOCA DO RIO,Boca do Rio
+9,BOCA DO RIO,Jardim Armação
+9,BOCA DO RIO,Imbuí
+10,PAU DA LIMA,Vale dos Lagos
+10,PAU DA LIMA,Trobogy
+10,PAU DA LIMA,Nova Brasília
+10,PAU DA LIMA,Canabrava
+10,PAU DA LIMA,Jardim Nova Esperança
+10,PAU DA LIMA,Novo Marotinho
+10,PAU DA LIMA,Sete de Abril
+10,PAU DA LIMA,Castelo Branco
+10,PAU DA LIMA,Vila Canária
+10,PAU DA LIMA,Jardim Cajazeiras
+10,PAU DA LIMA,Pau da Lima
+10,PAU DA LIMA,São Marcos
+10,PAU DA LIMA,São Rafael
+10,PAU DA LIMA,Dom Avelar
+10,PAU DA LIMA,Porto Seco Pirajá
+11,TANCREDO NEVES,Novo Horizonte
+11,TANCREDO NEVES,Nova Sussuarana
+11,TANCREDO NEVES,Sussuarana
+11,TANCREDO NEVES,Granjas Rurais Presidente Vargas
+11,TANCREDO NEVES,Calabetão
+11,TANCREDO NEVES,Jardim Santo Inácio
+11,TANCREDO NEVES,Mata Escura
+11,TANCREDO NEVES,Centro Administrativo da Bahia
+11,TANCREDO NEVES,Arraial do Retiro
+11,TANCREDO NEVES,Barreiras
+11,TANCREDO NEVES,Engomadeira
+11,TANCREDO NEVES,Beiru/Tancredo Neves
+11,TANCREDO NEVES,Arenoso
+11,TANCREDO NEVES,Cabula VI
+11,TANCREDO NEVES,Cabula
+11,TANCREDO NEVES,Pernambués
+11,TANCREDO NEVES,São Gonçalo
+11,TANCREDO NEVES,Resgate
+11,TANCREDO NEVES,Saramandaia
+11,TANCREDO NEVES,Narandiba
+11,TANCREDO NEVES,Saboeiro
+11,TANCREDO NEVES,Doron
+12,ITAPUÃ,Patamares
+12,ITAPUÃ,Piatã
+12,ITAPUÃ,Alto do Coqueirinho
+12,ITAPUÃ,Bairro da Paz
+12,ITAPUÃ,Itapuã
+12,ITAPUÃ,Stella Maris
+12,ITAPUÃ,Mussurunga
+12,ITAPUÃ,São Cristóvão
+12,ITAPUÃ,Nova Esperança
+12,ITAPUÃ,Aeroporto
+12,ITAPUÃ,Jardim das Margaridas
+12,ITAPUÃ,Cassange
+13,CAJAZEIRAS,Fazenda Grande II
+13,CAJAZEIRAS,Águas Claras
+13,CAJAZEIRAS,Cajazeiras II
+13,CAJAZEIRAS,Cajazeiras VII
+13,CAJAZEIRAS,Cajazeiras VI
+13,CAJAZEIRAS,Cajazeiras IV
+13,CAJAZEIRAS,Cajazeiras V
+13,CAJAZEIRAS,Cajazeiras XI
+13,CAJAZEIRAS,Fazenda Grande I
+13,CAJAZEIRAS,Cajazeiras X
+13,CAJAZEIRAS,Cajazeiras VIII
+13,CAJAZEIRAS,Jaguaripe I
+13,CAJAZEIRAS,Fazenda Grande IV
+13,CAJAZEIRAS,Fazenda Grande III
+13,CAJAZEIRAS,Boca da Mata
+14,BARRA,Vitória
+14,BARRA,Barra
+14,BARRA,Graça
+15,NORDESTE DE AMARALINA,Amaralina
+15,NORDESTE DE AMARALINA,Nordeste de Amaralina
+15,NORDESTE DE AMARALINA,Vale das Pedrinhas
+15,NORDESTE DE AMARALINA,Chapada do Rio Vermelho
+15,NORDESTE DE AMARALINA,Santa Cruz
+16,PITUBA,Pituba
+16,PITUBA,Itaigara
+16,PITUBA,Caminho das Árvores

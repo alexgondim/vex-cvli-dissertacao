@@ -1,0 +1,16 @@
+{
+ "ordem": 3,
+ "configuracao": {
+  "learning_rate": 0.05,
+  "n_estimators": 100,
+  "max_depth": 3,
+  "min_child_weight": 20
+ },
+ "mae": 0.575636731393366,
+ "rmse": 0.8390706399599408,
+ "deviance": 1.0073281644542258,
+ "empatadas_na_6a_casa": 1,
+ "posicao_do_padrao_no_ranking": 33,
+ "ordem_do_padrao_na_grade": 28,
+ "coincide_com_padrao": false
+}

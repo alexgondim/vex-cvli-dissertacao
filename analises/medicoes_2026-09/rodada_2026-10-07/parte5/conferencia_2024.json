@@ -1,0 +1,15 @@
+{
+ "ok": true,
+ "criterio": "as 3 métricas da MD no corte fixo de 2024 iguais às vistas em 13/10 (parte3/sensibilidade_MD_2024.csv) até a 6ª casa",
+ "ano": 2024,
+ "MD": {
+  "mae": 0.5706325040374655,
+  "rmse": 0.8333180004489366,
+  "deviance": 1.0223848256645154
+ },
+ "esperado": {
+  "mae": 0.570633,
+  "rmse": 0.833318,
+  "deviance": 1.022385
+ }
+}

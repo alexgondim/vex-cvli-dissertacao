@@ -1,0 +1,11 @@
+item	nome	valor	data_hora
+configuracao	ordem 3 da grade	{"learning_rate": 0.05, "n_estimators": 100, "max_depth": 3, "min_child_weight": 20}	2026-10-07 17:58:37
+atributos	30, na ordem do dicionário	bairro, risp, aisp, month_sin_alvo, month_cos_alvo, year_norm_alvo, time_index, cvli_lag1, cvli_lag2, cvli_lag3, cvli_lag4, cvli_lag5, cvli_lag6, cvli_lag7, cvli_lag8, cvli_lag9, cvli_lag10, cvli_lag11, cvli_lag12, cvli_ma3, cvli_ma6, cvli_ma12, cvli_trend, n_vitimas_hist12, prop_madrugada_hist12, prop_tarde_hist12, prop_noite_hist12, prop_fds_hist12, prop_masc_hist12, idade_media_hist12	2026-10-07 17:58:37
+base	painel_bairro_mes_features.csv	2a8288006c2323fa2f4995b82afa7e079f1944db804a0091c6ffd01224101443	2026-10-07 17:58:37
+programa	ablacao_sensibilidade.py	c8855ef0ee386da51592f9f4b9a655e6f041b444dfea4c425b4ceae06a686b2c	2026-10-07 17:58:37
+programa	busca.py	582b53784ab1e212209be3c66a3a52dcb0bd78764713a06e7982d7f272810980	2026-10-07 17:58:37
+programa	comum.py	f121fa82c4957c4a7b27f827450fdb0949e8044a3c5fa892d2fe03387a6aa2d3	2026-10-07 17:58:37
+programa	congelar.py	f9c3bc108f46ab05417f91238064a1f2e71fd80cdf0ec872effbb922c5ef07a3	2026-10-07 17:58:37
+programa	corte_fixo.py	eee3ffc65d3cd9dc87f5eb09a68028be9aea3b53edcb130e8642d3a8d84a3bc6	2026-10-07 17:58:37
+programa	portao_protocolo.py	4203631c8c8a2c4fad6deab7b5a0356c3cfde30c751219bcd8e6b6e003afb1b4	2026-10-07 17:58:37
+programa	tabelas_shap.py	61cb3bcf8e6b2a13c12cc1ad3c15d34458ae02126b4b04331083ebd7c5406ec5	2026-10-07 17:58:37

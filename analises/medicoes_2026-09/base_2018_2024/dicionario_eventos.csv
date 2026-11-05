@@ -1,0 +1,14 @@
+coluna,tipo,descricao
+id_ocorrencia,inteiro,"Identificador sequencial gerado nesta entrega (1 a 7.766, em ordem cronológica; na mesma data, na ordem do CVLI.xlsx). A fonte não traz identificador próprio."
+data,data (AAAA-MM-DD),Data do crime.
+ano,inteiro,"Ano da ocorrência, derivado de 'data'."
+mes,inteiro (1-12),"Mês da ocorrência, derivado de 'data'."
+dia_semana,categórico,"Dia da semana do crime, derivado da data. Domínio: segunda, terca, quarta, quinta, sexta, sabado, domingo."
+turno,categórico,"Turno do crime, derivado da hora. A hora é inteira, de 0 a 23, como vem na fonte. Faixas do projeto: madrugada 00:00 a 05:59, manha 06:00 a 11:59, tarde 12:00 a 17:59, noite 18:00 a 23:59."
+bairro,categórico,"Bairro de ocorrência. 166 bairros. Grafia acentuada da malha do IBGE em 159; nos 7 que a malha não traz, a grafia da fonte em caixa de título. O mesmo rótulo aparece em painel_bairro_mes_features.csv. Única alteração de grafia em relação à malha: em 'Vila Ruy Barbosa/Jardim Cruzeiro' a contrabarra da malha foi trocada por barra normal, porque parte dos leitores de CSV interpreta a contrabarra como escape."
+risp,categórico,"Região Integrada de Segurança Pública do bairro: BTS, CENTRAL ou ATLÂNTICO, pela tabela bairro → RISP do POPULAÇAO.xlsx (Bruno). Um valor por bairro. Coincide com a coluna RISP 2025 do CVLI.xlsx em 7.760 dos 7.766 registros; os 6 restantes trazem outra RISP na fonte: 1 de Bairro da Paz como CENTRAL, onde a tabela dá ATLÂNTICO; 1 de Imbuí como CENTRAL, onde a tabela dá ATLÂNTICO; 3 de Itapuã como CENTRAL, onde a tabela dá ATLÂNTICO; 1 de Piatã como CENTRAL, onde a tabela dá ATLÂNTICO."
+aisp,inteiro (1-16),"Área Integrada de Segurança Pública do bairro, pela Portaria SSP 435/2020 (Anexo I). Coluna acrescentada ao dicionário de origem, por decisão do orientador. 16 AISP; cada AISP pertence a uma única RISP."
+tipo_crime,categórico,"Natureza específica do crime: Homicídio Doloso (7.423), Latrocínio (128), Lesão Corporal Seguida de Morte (112), Feminicídio (103)."
+classificacao,categórico,Classificação agregada. CVLI em todas as 7.766 linhas.
+sexo_vitima,categórico (M/F),Sexo da vítima (M/F). Vazio em 1 registro. Atributo do evento: no modelo entra só agregado na janela histórica (prop_masc_hist12).
+idade_vitima,inteiro,"Idade da vítima. Vazia em 331 registros: 280 sem idade na fonte e 51 de 2018 gravados como zero. Em 2018 a fonte gravou idade ausente como 0 (naquele ano: 0 nulos e 51 zeros; nos demais, 33 a 52 nulos e no máximo 2 zeros), e esses 51 são tratados como ausentes aqui e na base bairro-mês. Entra no modelo só agregada (idade_media_hist12)."

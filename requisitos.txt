@@ -1,0 +1,16 @@
+# Versões do ambiente que executou a rodada (Python 3.11.9), lidas por importação em 06/11/2026;
+# a do plotly, pelos arquivos instalados (o registro antigo que ficou no ambiente responde 6.1.2 ao __version__).
+# O torch +cpu vem do índice do PyTorch: --extra-index-url https://download.pytorch.org/whl/cpu
+xgboost==3.0.2
+numpy==2.4.4
+pandas==3.0.2
+scipy==1.17.1
+torch==2.14.1+cpu
+Unidecode==1.4.0
+streamlit==1.61.0
+plotly==6.7.0
+shap==0.51.0
+shapely==2.1.1
+matplotlib==3.10.8
+playwright==1.62.0
+pillow==12.2.0

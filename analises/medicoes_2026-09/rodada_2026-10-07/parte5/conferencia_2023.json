@@ -1,0 +1,31 @@
+{
+ "ok": true,
+ "criterio": "as 3 métricas da MA e da MD iguais às do despacho até a 6ª casa",
+ "forma": "dobras_2023",
+ "MA": {
+  "mae": 0.5768370307106749,
+  "rmse": 0.8396124688886631,
+  "deviance": 1.0084239086175022,
+  "despacho": {
+   "mae": 0.576837,
+   "rmse": 0.839612,
+   "deviance": 1.008424
+  },
+  "repete_o_despacho": true,
+  "previsoes_iguais_bit_a_bit_parte1": true,
+  "metricas_iguais_parte1": true
+ },
+ "MD": {
+  "mae": 0.5869795477848097,
+  "rmse": 0.8503356435298746,
+  "deviance": 1.0407009331037267,
+  "despacho": {
+   "mae": 0.58698,
+   "rmse": 0.850336,
+   "deviance": 1.040701
+  },
+  "repete_o_despacho": true,
+  "metricas_iguais_parte3": false,
+  "contribuicoes_iguais_bit_a_bit_parte3": true
+ }
+}

@@ -1,0 +1,23 @@
+{
+ "ok": true,
+ "dobras_2023": {
+  "mae": 0.5853428456139373,
+  "rmse": 0.8491530477343813,
+  "deviance": 1.0440346493064196,
+  "despacho": {
+   "deviance": 1.044035
+  },
+  "previsoes_iguais_bit_a_bit_parte1": true,
+  "metricas_iguais_parte1": true
+ },
+ "corte_fixo_2023": {
+  "mae": 0.5873153169254163,
+  "rmse": 0.8522854699459441,
+  "deviance": 1.0481842413525595,
+  "despacho": {
+   "mae": 0.587315,
+   "rmse": 0.852285,
+   "deviance": 1.048184
+  }
+ }
+}

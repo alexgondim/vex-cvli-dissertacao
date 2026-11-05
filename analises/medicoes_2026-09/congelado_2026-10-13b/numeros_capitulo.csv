@@ -1,0 +1,100 @@
+n,arquivo,linha_ou_chave,coluna,modelo,forma,ano,valor,semente,atributo
+1,entradas/parte2_ensaio_ablacao_sensibilidade_2023.csv,5,mae,M4,corte fixo,2023.0,"0,581558",,
+2,entradas/parte2_ensaio_ablacao_sensibilidade_2023.csv,5,rmse,M4,corte fixo,2023.0,"0,845405",,
+3,entradas/parte2_ensaio_ablacao_sensibilidade_2023.csv,5,deviance,M4,corte fixo,2023.0,"1,017706",,
+4,entradas/parte1_sensibilidade_metricas.csv,2,mae,M4,12 dobras,2023.0,"0,575637",,
+5,entradas/parte1_sensibilidade_metricas.csv,2,rmse,M4,12 dobras,2023.0,"0,839071",,
+6,entradas/parte1_sensibilidade_metricas.csv,2,deviance,M4,12 dobras,2023.0,"1,007328",,
+7,entradas/parte2_ablacao_sensibilidade_2024.csv,5,mae,M4,corte fixo,2024.0,"0,567592",,
+8,entradas/parte2_ablacao_sensibilidade_2024.csv,5,rmse,M4,corte fixo,2024.0,"0,826353",,
+9,entradas/parte2_ablacao_sensibilidade_2024.csv,5,deviance,M4,corte fixo,2024.0,"0,990417",,
+10,entradas/parte2_ensaio_ablacao_sensibilidade_2023.csv,7,mae,MB,corte fixo,2023.0,"0,587315",,
+11,entradas/parte2_ensaio_ablacao_sensibilidade_2023.csv,7,rmse,MB,corte fixo,2023.0,"0,852285",,
+12,entradas/parte2_ensaio_ablacao_sensibilidade_2023.csv,7,deviance,MB,corte fixo,2023.0,"1,048184",,
+13,entradas/parte1_sensibilidade_metricas.csv,4,mae,MB,12 dobras,2023.0,"0,585343",,
+14,entradas/parte1_sensibilidade_metricas.csv,4,rmse,MB,12 dobras,2023.0,"0,849153",,
+15,entradas/parte1_sensibilidade_metricas.csv,4,deviance,MB,12 dobras,2023.0,"1,044035",,
+16,entradas/parte2_ablacao_sensibilidade_2024.csv,7,mae,MB,corte fixo,2024.0,"0,568644",,
+17,entradas/parte2_ablacao_sensibilidade_2024.csv,7,rmse,MB,corte fixo,2024.0,"0,833324",,
+18,entradas/parte2_ablacao_sensibilidade_2024.csv,7,deviance,MB,corte fixo,2024.0,"1,022862",,
+19,sensibilidade_MD_2023.csv,3,mae,MD,corte fixo,2023.0,"0,590529",,
+20,sensibilidade_MD_2023.csv,3,rmse,MD,corte fixo,2023.0,"0,852938",,
+21,sensibilidade_MD_2023.csv,3,deviance,MD,corte fixo,2023.0,"1,043370",,
+22,sensibilidade_MD_2023.csv,2,mae,MD,12 dobras,2023.0,"0,586980",,
+23,sensibilidade_MD_2023.csv,2,rmse,MD,12 dobras,2023.0,"0,850336",,
+24,sensibilidade_MD_2023.csv,2,deviance,MD,12 dobras,2023.0,"1,040701",,
+25,sensibilidade_MD_2024.csv,2,mae,MD,corte fixo,2024.0,"0,570633",,
+26,sensibilidade_MD_2024.csv,2,rmse,MD,corte fixo,2024.0,"0,833318",,
+27,sensibilidade_MD_2024.csv,2,deviance,MD,corte fixo,2024.0,"1,022385",,
+28,lstm_metricas.csv,2,mae,LSTM,"corte fixo, conjunto da parada",2023.0,"0,574087",,
+29,lstm_metricas.csv,2,rmse,LSTM,"corte fixo, conjunto da parada",2023.0,"0,853693",,
+30,lstm_metricas.csv,2,deviance,LSTM,"corte fixo, conjunto da parada",2023.0,"1,042525",,
+31,lstm_metricas.csv,3,mae,LSTM,corte fixo,2024.0,"0,553733",,
+32,lstm_metricas.csv,3,rmse,LSTM,corte fixo,2024.0,"0,832009",,
+33,lstm_metricas.csv,3,deviance,LSTM,corte fixo,2024.0,"1,018054",,
+34,entradas/parte2_ensaio_metricas.csv,5,mae,média móvel de 12 meses,corte fixo,2023.0,"0,564759",,
+35,entradas/parte2_ensaio_metricas.csv,5,rmse,média móvel de 12 meses,corte fixo,2023.0,"0,868799",,
+36,entradas/parte2_ensaio_metricas.csv,5,deviance,média móvel de 12 meses,corte fixo,2023.0,"1,109814",,
+37,entradas/parte2_metricas.csv,5,mae,média móvel de 12 meses,corte fixo,2024.0,"0,534597",,
+38,entradas/parte2_metricas.csv,5,rmse,média móvel de 12 meses,corte fixo,2024.0,"0,838511",,
+39,entradas/parte2_metricas.csv,5,deviance,média móvel de 12 meses,corte fixo,2024.0,"1,052953",,
+40,lstm_sementes.csv,2,mae,LSTM,"corte fixo, conjunto da parada",2023.0,"0,574087",42.0,
+41,lstm_sementes.csv,2,rmse,LSTM,"corte fixo, conjunto da parada",2023.0,"0,853693",42.0,
+42,lstm_sementes.csv,2,deviance,LSTM,"corte fixo, conjunto da parada",2023.0,"1,042525",42.0,
+43,lstm_sementes.csv,3,mae,LSTM,"corte fixo, conjunto da parada",2023.0,"0,584912",43.0,
+44,lstm_sementes.csv,3,rmse,LSTM,"corte fixo, conjunto da parada",2023.0,"0,851418",43.0,
+45,lstm_sementes.csv,3,deviance,LSTM,"corte fixo, conjunto da parada",2023.0,"1,041186",43.0,
+46,lstm_sementes.csv,4,mae,LSTM,"corte fixo, conjunto da parada",2023.0,"0,576764",44.0,
+47,lstm_sementes.csv,4,rmse,LSTM,"corte fixo, conjunto da parada",2023.0,"0,850545",44.0,
+48,lstm_sementes.csv,4,deviance,LSTM,"corte fixo, conjunto da parada",2023.0,"1,039402",44.0,
+49,resumo_MD.json,2023/tau_b/MD x M4,tau_b,,,,"0,724638",,
+50,resumo_MD.json,2023/tau_b/MD x MB,tau_b,,,,"0,843478",,
+51,resumo_MD.json,2024/tau_b/MD x M4,tau_b,,,,"0,648237",,
+52,resumo_lstm.json,tau_b_12_defasagens_lstm_x_m4,tau_b,,,,"0,015268",,
+53,resumo_MD.json,2023/peso_espacial/MD,peso_espacial,,,,"0,076676",,
+54,resumo_MD.json,2023/peso_espacial/M4,peso_espacial,,,,"0,871239",,
+55,resumo_MD.json,2023/peso_espacial/MB,peso_espacial,,,,"0,025801",,
+56,resumo_MD.json,2024/peso_espacial/MD,peso_espacial,,,,"0,070072",,
+57,resumo_MD.json,2024/peso_espacial/M4,peso_espacial,,,,"0,860534",,
+58,permutacao_lstm_2023.csv,2,aumento_medio,LSTM,,,"0,009301",,cvli_lag12
+59,permutacao_m4_2023.csv,20,aumento_medio,M4,,,"0,000515",,cvli_lag12
+60,permutacao_lstm_2023.csv,3,aumento_medio,LSTM,,,"0,009188",,cvli_lag11
+61,permutacao_m4_2023.csv,19,aumento_medio,M4,,,"-0,000236",,cvli_lag11
+62,permutacao_lstm_2023.csv,4,aumento_medio,LSTM,,,"0,012569",,cvli_lag10
+63,permutacao_m4_2023.csv,18,aumento_medio,M4,,,"0,000025",,cvli_lag10
+64,permutacao_lstm_2023.csv,5,aumento_medio,LSTM,,,"0,018368",,cvli_lag9
+65,permutacao_m4_2023.csv,17,aumento_medio,M4,,,"-0,000081",,cvli_lag9
+66,permutacao_lstm_2023.csv,6,aumento_medio,LSTM,,,"0,015923",,cvli_lag8
+67,permutacao_m4_2023.csv,16,aumento_medio,M4,,,"-0,000045",,cvli_lag8
+68,permutacao_lstm_2023.csv,7,aumento_medio,LSTM,,,"0,006836",,cvli_lag7
+69,permutacao_m4_2023.csv,15,aumento_medio,M4,,,"0,000000",,cvli_lag7
+70,permutacao_lstm_2023.csv,8,aumento_medio,LSTM,,,"0,008759",,cvli_lag6
+71,permutacao_m4_2023.csv,14,aumento_medio,M4,,,"0,000005",,cvli_lag6
+72,permutacao_lstm_2023.csv,9,aumento_medio,LSTM,,,"0,013952",,cvli_lag5
+73,permutacao_m4_2023.csv,13,aumento_medio,M4,,,"0,000060",,cvli_lag5
+74,permutacao_lstm_2023.csv,10,aumento_medio,LSTM,,,"0,011174",,cvli_lag4
+75,permutacao_m4_2023.csv,12,aumento_medio,M4,,,"-0,000170",,cvli_lag4
+76,permutacao_lstm_2023.csv,11,aumento_medio,LSTM,,,"0,016036",,cvli_lag3
+77,permutacao_m4_2023.csv,11,aumento_medio,M4,,,"0,000000",,cvli_lag3
+78,permutacao_lstm_2023.csv,12,aumento_medio,LSTM,,,"0,009678",,cvli_lag2
+79,permutacao_m4_2023.csv,10,aumento_medio,M4,,,"-0,000094",,cvli_lag2
+80,permutacao_lstm_2023.csv,13,aumento_medio,LSTM,,,"0,011169",,cvli_lag1
+81,permutacao_m4_2023.csv,9,aumento_medio,M4,,,"-0,000649",,cvli_lag1
+82,permutacao_m4_2023.csv,2,aumento_medio,M4,,,"0,565882",,bairro
+83,permutacao_m4_2023.csv,3,aumento_medio,M4,,,"0,000010",,risp
+84,permutacao_m4_2023.csv,4,aumento_medio,M4,,,"0,001203",,aisp
+85,permutacao_m4_2023.csv,5,aumento_medio,M4,,,"0,001033",,month_sin_alvo
+86,permutacao_m4_2023.csv,6,aumento_medio,M4,,,"-0,000127",,month_cos_alvo
+87,permutacao_m4_2023.csv,7,aumento_medio,M4,,,"0,000000",,year_norm_alvo
+88,permutacao_m4_2023.csv,8,aumento_medio,M4,,,"0,000845",,time_index
+89,permutacao_m4_2023.csv,21,aumento_medio,M4,,,"-0,000994",,cvli_ma3
+90,permutacao_m4_2023.csv,22,aumento_medio,M4,,,"-0,002482",,cvli_ma6
+91,permutacao_m4_2023.csv,23,aumento_medio,M4,,,"0,000213",,cvli_ma12
+92,permutacao_m4_2023.csv,24,aumento_medio,M4,,,"0,000043",,cvli_trend
+93,permutacao_m4_2023.csv,25,aumento_medio,M4,,,"0,000000",,n_vitimas_hist12
+94,permutacao_m4_2023.csv,26,aumento_medio,M4,,,"-0,000528",,prop_madrugada_hist12
+95,permutacao_m4_2023.csv,27,aumento_medio,M4,,,"-0,000355",,prop_tarde_hist12
+96,permutacao_m4_2023.csv,28,aumento_medio,M4,,,"-0,000421",,prop_noite_hist12
+97,permutacao_m4_2023.csv,29,aumento_medio,M4,,,"-0,000390",,prop_fds_hist12
+98,permutacao_m4_2023.csv,30,aumento_medio,M4,,,"0,000059",,prop_masc_hist12
+99,permutacao_m4_2023.csv,31,aumento_medio,M4,,,"0,003335",,idade_media_hist12

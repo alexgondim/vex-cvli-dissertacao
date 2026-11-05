@@ -1,0 +1,31 @@
+2026-10-13 18:23:50  protocolo: protocolo_parte3.md gravado em 2026-10-13 18:23:50 (sha256 99100c5c65fbd82dded4d9743c23020836dea9609352760f49ceb9ea5d6c9951), antes de qualquer conta com alvo de 2024
+2026-10-13 18:23:53  ensaio, itens 3 e 2: início; base lida sem as linhas de 2024
+2026-10-13 18:23:56  item 3, MB nas 12 dobras: MAE 0.585343, RMSE 0.849153, deviance 1.044035; deviance do despacho repetida: True; previsões iguais bit a bit (float32) às da Parte 1: True; 3 métricas iguais às da Parte 1: True
+2026-10-13 18:23:56  item 3, MB no corte fixo de 2023: MAE 0.587315, RMSE 0.852285, deviance 1.048184; números do despacho repetidos: True
+2026-10-13 18:23:59  item 2, MD (29 atributos) nas 12 dobras: MAE 0.586980, RMSE 0.850336, deviance 1.040701
+2026-10-13 18:23:59  acréscimo, MD no corte fixo de 2023: MAE 0.590529, RMSE 0.852938, deviance 1.043370
+2026-10-13 18:23:59  item 2, tau-b MD x M4 nos 27 não espaciais: 0.724638
+2026-10-13 18:23:59  item 2, tau-b MD x MB nos 27 não espaciais: 0.843478
+2026-10-13 18:23:59  item 2, peso espacial (aisp + risp sobre os 29) da MD: 0.076676; mesma definição no M4 (bairro, aisp e risp sobre 30): 0.871239; na MB (risp sobre 28): 0.025801
+2026-10-13 18:23:59  ensaio, itens 3 e 2: fim; gravados conferencia_MB.json, sensibilidade_MD_2023.csv, contribuicoes_MD_2023.csv, importancia_MD_2023.csv e resumo_MD_2023.json
+2026-10-13 18:24:08  ensaio, item 8: início; base lida sem as linhas de 2024; PyTorch 2.14.1+cpu, 1 fio
+2026-10-13 18:24:15  item 8, semente 42: melhor época 19 de 39 rodadas; em 2023, MAE 0.574087, RMSE 0.853693, deviance 1.042525
+2026-10-13 18:24:15  item 8: lstm_modelo.pt gravado com os pesos da melhor época da semente 42; recarregado, repete a previsão de 2023 bit a bit
+2026-10-13 18:24:23  item 8, semente 43: melhor época 45 de 65 rodadas; em 2023, MAE 0.584912, RMSE 0.851418, deviance 1.041186
+2026-10-13 18:24:31  item 8, semente 44: melhor época 33 de 53 rodadas; em 2023, MAE 0.576764, RMSE 0.850545, deviance 1.039402
+2026-10-13 18:24:31  ensaio, item 8: fim; deviance em 2023 entre as 3 sementes de 1.039402 a 1.042525 (amplitude 0.003124); gravados lstm_sementes.csv, lstm_epocas.csv, lstm_previsoes_ensaio_2023.csv e lstm_modelo.pt
+2026-10-13 18:24:41  ensaio, item 10: início; base lida sem as linhas de 2024
+2026-10-13 18:24:42  item 10, LSTM: deviance sem permutação 1.042525; ordem das defasagens pelo aumento: cvli_lag9, cvli_lag3, cvli_lag8, cvli_lag5, cvli_lag10, cvli_lag4, cvli_lag1, cvli_lag2, cvli_lag12, cvli_lag11, cvli_lag6, cvli_lag7
+2026-10-13 18:24:45  item 10, M4 das 12 dobras reajustado: previsões iguais bit a bit (float32) às da Parte 1 e métricas iguais às de escolha.json: True; deviance 1.007328
+2026-10-13 18:25:16  item 10, M4: ordem geral dos 30 pelo aumento: bairro, idade_media_hist12, aisp, month_sin_alvo, time_index, cvli_lag12, cvli_ma12, cvli_lag5, prop_masc_hist12, cvli_trend, cvli_lag10, risp, cvli_lag6, year_norm_alvo, cvli_lag3, cvli_lag7, n_vitimas_hist12, cvli_lag8, cvli_lag9, cvli_lag2, month_cos_alvo, cvli_lag4, cvli_lag11, prop_tarde_hist12, prop_fds_hist12, prop_noite_hist12, prop_madrugada_hist12, cvli_lag1, cvli_ma3, cvli_ma6
+2026-10-13 18:25:16  item 10, tau-b entre as ordenações das 12 defasagens (LSTM x M4): 0.015268
+2026-10-13 18:25:16  ensaio, item 10: fim; gravados permutacao_lstm_2023.csv, permutacao_m4_2023.csv e resumo_lstm.json
+2026-10-13 18:25:43  congelamento: CONGELADO_parte3.tsv gravado em 2026-10-13 18:25:43, com o protocolo, 8 programas e lstm_modelo.pt (sha256 90970e9d8d764b8120bab46cf5a27a0aa70232a9cf04475968c7f2d32163a7d7)
+2026-10-13 18:25:47  teste, item 4: início, MD no corte fixo avaliada nas linhas de alvo em 2024
+2026-10-13 18:25:47  item 4, MD (29 atributos) no corte fixo de 2024: MAE 0.570633, RMSE 0.833318, deviance 1.022385
+2026-10-13 18:25:47  item 4, 2024: tau-b MD x M4 nos 27 não espaciais 0.648237; peso espacial da MD 0.070072, do M4 0.860534
+2026-10-13 18:25:47  teste, item 4: fim; gravados sensibilidade_MD_2024.csv, contribuicoes_MD_2024.csv, importancia_MD_2024.csv e resumo_MD.json
+2026-10-13 18:25:51  teste, item 9: início, LSTM da semente 42 avaliada nas linhas de alvo em 2024
+2026-10-13 18:25:51  item 9, 2023 recalculado: repete o ensaio da semente 42 (MAE 0.574087, RMSE 0.853693, deviance 1.042525)
+2026-10-13 18:25:51  item 9, LSTM no corte fixo de 2024: MAE 0.553733, RMSE 0.832009, deviance 1.018054
+2026-10-13 18:25:51  teste, item 9: fim; gravados lstm_metricas.csv e lstm_previsoes.csv

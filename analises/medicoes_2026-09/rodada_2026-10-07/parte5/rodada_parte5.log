@@ -1,0 +1,49 @@
+2026-10-22 10:16:18  protocolo: protocolo_parte5.md gravado em 2026-10-22 10:16:18 (sha256 268a263754bd7ea37dddfef22e1e1ddc2611a5c0415167dd0269756351dc9629), antes de qualquer conta
+2026-10-22 10:16:30  ensaio, itens 2 e 3: início; base lida sem as linhas de 2024
+2026-10-22 10:16:33  item 2, MA (28 atributos) nas 12 dobras: MAE 0.576837, RMSE 0.839612, deviance 1.008424 (0.5768370307106749, 0.8396124688886631, 1.0084239086175022); números do despacho repetidos: True; previsões iguais bit a bit (float32) às da Parte 1: True; 3 métricas iguais às da Parte 1: True
+2026-10-22 10:16:38  item 2, MD (29 atributos) nas 12 dobras: MAE 0.586980, RMSE 0.850336, deviance 1.040701 (0.5869795477848097, 0.8503356435298746, 1.0407009331037267); números do despacho repetidos: True; 3 métricas iguais às da Parte 3: False; contribuições iguais bit a bit (float32) às da Parte 3: True
+2026-10-22 10:16:44  item 3, ME (29 atributos; espaciais: bairro, aisp) nas 12 dobras: MAE 0.575653, RMSE 0.839072, deviance 1.007380 (0.5756527667408846, 0.8390715237827288, 1.0073804896525544); aditividade, maior |soma das contribuições e do valor base − log da previsão|: 1.28e-06
+2026-10-22 10:16:44  item 3, ME: tau-b contra o M4 nos 27 não espaciais 0.994203; peso espacial 0.871364; maior média do valor absoluto: bairro (0.730863)
+2026-10-22 10:16:49  item 3, MF (28 atributos; espaciais: aisp) nas 12 dobras: MAE 0.586980, RMSE 0.850336, deviance 1.040701 (0.5869795477848097, 0.8503356435298746, 1.0407009331037267); aditividade, maior |soma das contribuições e do valor base − log da previsão|: 9.91e-07
+2026-10-22 10:16:49  item 3, MF: tau-b contra o M4 nos 27 não espaciais 0.724638; peso espacial 0.076676; maior média do valor absoluto: cvli_ma12 (0.561699)
+2026-10-22 10:16:53  item 3, MG (27 atributos; espaciais: nenhum) nas 12 dobras: MAE 0.585879, RMSE 0.849204, deviance 1.046654 (0.5858789999075383, 0.8492041758421742, 1.0466544663237975); aditividade, maior |soma das contribuições e do valor base − log da previsão|: 1.23e-06
+2026-10-22 10:16:54  item 3, MG: tau-b contra o M4 nos 27 não espaciais 0.689761; peso espacial 0.000000; maior média do valor absoluto: cvli_ma12 (0.574097)
+2026-10-22 10:16:54  ensaio, itens 2 e 3: fim; gravados conferencia_2023.json, sensibilidade_parte5_2023.csv, contribuicoes_ME_2023.csv, contribuicoes_MF_2023.csv, contribuicoes_MG_2023.csv, importancia_parte5_2023.csv e resumo_parte5.json
+2026-10-22 10:18:40  ensaio, item 4: início; corte fixo avaliado nas linhas de alvo em 2023
+2026-10-22 10:18:40  ensaio, item 4, MD (29 atributos) no corte fixo de 2023: MAE 0.590529, RMSE 0.852938, deviance 1.043370 (0.5905287894513832, 0.8529377604015116, 1.043370051672809); repete {'mae': 0.590529, 'rmse': 0.852938, 'deviance': 1.04337}: True
+2026-10-22 10:18:41  ensaio, item 4, ME (29 atributos; espaciais: bairro, aisp) no corte fixo de 2023: MAE 0.581558, RMSE 0.845405, deviance 1.017706 (0.5815575347360538, 0.8454047970880183, 1.0177057123521795)
+2026-10-22 10:18:41  ensaio, item 4, MF (28 atributos; espaciais: aisp) no corte fixo de 2023: MAE 0.590529, RMSE 0.852938, deviance 1.043370 (0.5905287894513832, 0.8529377604015116, 1.043370051672809)
+2026-10-22 10:18:41  ensaio, item 4, MG (27 atributos; espaciais: nenhum) no corte fixo de 2023: MAE 0.587333, RMSE 0.852556, deviance 1.049942 (0.5873328362774837, 0.8525564175754785, 1.04994207328363)
+2026-10-22 10:18:41  ensaio, item 4: fim; nada gravado além do log
+2026-10-22 10:18:45  ensaio, item 6: início; tabela das 8 combinações, só com arquivos já gravados
+2026-10-22 10:18:45  ensaio, item 6: na MD, contribuição da risp igual a 0 nas 1.992 linhas de 2023: True; contribuições da MF iguais bit a bit (float32) às da MD sem a risp: True; 3 métricas de 2023 da MF iguais às da MD: True
+2026-10-22 10:18:45  ensaio, item 6: peso espacial do M4 e da MB, recalculado das contribuições da Parte 1, igual ao de parte3/resumo_MD_2023.json: {'M4': True, 'MB': True}
+2026-10-22 10:18:45  ensaio, item 6, M4 (Parte 1; espaciais: bairro, risp, aisp): deviance 2023 1.007328; deviance 2024 fora do ensaio; peso espacial 2023 0.871239; maior média 2023 bairro (0.730675); tau-b contra o M4 1.000000
+2026-10-22 10:18:45  ensaio, item 6, MA (Parte 1; espaciais: bairro): deviance 2023 1.008424; deviance 2024 fora do ensaio; peso espacial 2023 0.871316; maior média 2023 bairro (0.728244); tau-b contra o M4 0.952543
+2026-10-22 10:18:45  ensaio, item 6, MB (Parte 1; espaciais: risp): deviance 2023 1.044035; deviance 2024 fora do ensaio; peso espacial 2023 0.025801; maior média 2023 cvli_ma12 (0.571171); tau-b contra o M4 0.707246
+2026-10-22 10:18:45  ensaio, item 6, MC (Parte 1; espaciais: bairro, risp): deviance 2023 1.008343; deviance 2024 fora do ensaio; peso espacial 2023 0.869437; maior média 2023 bairro (0.729031); tau-b contra o M4 0.935276
+2026-10-22 10:18:45  ensaio, item 6, MD (Parte 3; espaciais: risp, aisp): deviance 2023 1.040701; deviance 2024 fora do ensaio; peso espacial 2023 0.076676; maior média 2023 cvli_ma12 (0.561699); tau-b contra o M4 0.724638
+2026-10-22 10:18:45  ensaio, item 6, ME (Parte 5; espaciais: bairro, aisp): deviance 2023 1.007380; deviance 2024 fora do ensaio; peso espacial 2023 0.871364; maior média 2023 bairro (0.730863); tau-b contra o M4 0.994203
+2026-10-22 10:18:45  ensaio, item 6, MF (Parte 5; espaciais: aisp): deviance 2023 1.040701; deviance 2024 fora do ensaio; peso espacial 2023 0.076676; maior média 2023 cvli_ma12 (0.561699); tau-b contra o M4 0.724638
+2026-10-22 10:18:45  ensaio, item 6, MG (Parte 5; espaciais: nenhum): deviance 2023 1.046654; deviance 2024 fora do ensaio; peso espacial 2023 0.000000; maior média 2023 cvli_ma12 (0.574097); tau-b contra o M4 0.689761
+2026-10-22 10:18:45  ensaio, item 6: fim; sem as colunas de 2024; nada gravado além do log
+2026-10-22 10:19:07  congelamento: CONGELADO_parte5.tsv gravado em 2026-10-22 10:19:07, com o protocolo, 6 programas e 7 saídas do ensaio (sha256 c8e06bd12b9369eeb051b65add0b75c9315fc68fd372ceb4edeb7cee8062d297)
+2026-10-22 10:19:15  teste, item 4: início; corte fixo avaliado nas linhas de alvo em 2024
+2026-10-22 10:19:15  teste, item 4, MD (29 atributos) no corte fixo de 2024: MAE 0.570633, RMSE 0.833318, deviance 1.022385 (0.5706325040374655, 0.8333180004489366, 1.0223848256645154); repete {'mae': 0.570633, 'rmse': 0.833318, 'deviance': 1.022385}: True
+2026-10-22 10:19:15  teste, item 4, ME (29 atributos; espaciais: bairro, aisp) no corte fixo de 2024: MAE 0.567592, RMSE 0.826353, deviance 0.990417 (0.5675924232745745, 0.8263527984933478, 0.9904166468870066)
+2026-10-22 10:19:15  teste, item 4, MF (28 atributos; espaciais: aisp) no corte fixo de 2024: MAE 0.570633, RMSE 0.833318, deviance 1.022385 (0.5706325040374655, 0.8333180004489366, 1.0223848256645154)
+2026-10-22 10:19:15  teste, item 4, MG (27 atributos; espaciais: nenhum) no corte fixo de 2024: MAE 0.569088, RMSE 0.833904, deviance 1.025842 (0.5690881174588838, 0.8339035487297808, 1.025842095831192)
+2026-10-22 10:19:15  teste, item 4: fim; gravados conferencia_2024.json e sensibilidade_parte5_2024.csv
+2026-10-22 10:19:31  teste, item 6: início; tabela das 8 combinações, só com arquivos já gravados
+2026-10-22 10:19:31  teste, item 6: na MD, contribuição da risp igual a 0 nas 1.992 linhas de 2023: True; contribuições da MF iguais bit a bit (float32) às da MD sem a risp: True; 3 métricas de 2023 da MF iguais às da MD: True
+2026-10-22 10:19:31  teste, item 6: 3 métricas de 2024 da MF iguais às da MD: True
+2026-10-22 10:19:31  teste, item 6: peso espacial do M4 e da MB, recalculado das contribuições da Parte 1, igual ao de parte3/resumo_MD_2023.json: {'M4': True, 'MB': True}
+2026-10-22 10:19:31  teste, item 6, M4 (Parte 1; espaciais: bairro, risp, aisp): deviance 2023 1.007328; deviance 2024 0.990417; peso espacial 2023 0.871239; maior média 2023 bairro (0.730675); tau-b contra o M4 1.000000
+2026-10-22 10:19:31  teste, item 6, MA (Parte 1; espaciais: bairro): deviance 2023 1.008424; deviance 2024 0.992578; peso espacial 2023 0.871316; maior média 2023 bairro (0.728244); tau-b contra o M4 0.952543
+2026-10-22 10:19:31  teste, item 6, MB (Parte 1; espaciais: risp): deviance 2023 1.044035; deviance 2024 1.022862; peso espacial 2023 0.025801; maior média 2023 cvli_ma12 (0.571171); tau-b contra o M4 0.707246
+2026-10-22 10:19:31  teste, item 6, MC (Parte 1; espaciais: bairro, risp): deviance 2023 1.008343; deviance 2024 0.993240; peso espacial 2023 0.869437; maior média 2023 bairro (0.729031); tau-b contra o M4 0.935276
+2026-10-22 10:19:31  teste, item 6, MD (Parte 3; espaciais: risp, aisp): deviance 2023 1.040701; deviance 2024 1.022385; peso espacial 2023 0.076676; maior média 2023 cvli_ma12 (0.561699); tau-b contra o M4 0.724638
+2026-10-22 10:19:31  teste, item 6, ME (Parte 5; espaciais: bairro, aisp): deviance 2023 1.007380; deviance 2024 0.990417; peso espacial 2023 0.871364; maior média 2023 bairro (0.730863); tau-b contra o M4 0.994203
+2026-10-22 10:19:31  teste, item 6, MF (Parte 5; espaciais: aisp): deviance 2023 1.040701; deviance 2024 1.022385; peso espacial 2023 0.076676; maior média 2023 cvli_ma12 (0.561699); tau-b contra o M4 0.724638
+2026-10-22 10:19:31  teste, item 6, MG (Parte 5; espaciais: nenhum): deviance 2023 1.046654; deviance 2024 1.025842; peso espacial 2023 0.000000; maior média 2023 cvli_ma12 (0.574097); tau-b contra o M4 0.689761
+2026-10-22 10:19:31  teste, item 6: fim; gravado tabela_8_combinacoes.csv

@@ -1,0 +1,21 @@
+2026-10-21 17:36:42  validação: início; protocolo_parte4.md presente, sha256 667442f96dcfac65e2de00d99d08fde07d668937ad8fe7e1b9109293049f8521
+2026-10-21 17:36:42  validação: base de 27/09 conferida pelo sha256 (2a8288006c2323fa2f4995b82afa7e079f1944db804a0091c6ffd01224101443); as linhas de alvo em 2024 saíram logo depois da leitura; ficam 9960 linhas, com alvo de 2019 a 2023
+2026-10-21 17:36:42  item 1 conferido por código: criminal 16, temporal 8, espacial 3, perfil 3, sem repetição, somando os 30 do dicionário; M1 16, M2 24, M3 27, M4 30 atributos; M1 e M4 iguais aos da Parte 1
+2026-10-21 17:36:42  validação: configuração {'learning_rate': 0.05, 'n_estimators': 100, 'max_depth': 3, 'min_child_weight': 20}, semente 42, 12 dobras de 2023 (treino com todo alvo anterior ao mês, desde jan/2019; previsão das 166 linhas do mês)
+2026-10-21 17:36:47  validação, M1 (16 atributos): nas 1.992 linhas MAE 0.587754, RMSE 0.852464, deviance 1.048960; média das 12 dobras MAE 0.587754, RMSE 0.841187, deviance 1.048960
+2026-10-21 17:36:52  validação, M2 (24 atributos): nas 1.992 linhas MAE 0.585205, RMSE 0.849671, deviance 1.046502; média das 12 dobras MAE 0.585205, RMSE 0.838098, deviance 1.046502
+2026-10-21 17:36:59  validação, M3 (27 atributos): nas 1.992 linhas MAE 0.574458, RMSE 0.838173, deviance 1.005707; média das 12 dobras MAE 0.574458, RMSE 0.828174, deviance 1.005707
+2026-10-21 17:37:07  validação, M4 (30 atributos): nas 1.992 linhas MAE 0.575637, RMSE 0.839071, deviance 1.007328; média das 12 dobras MAE 0.575637, RMSE 0.829108, deviance 1.007328
+2026-10-21 17:37:07  validação, conferência de M1 e M4 contra ablacao.csv, 6 casas: M1 mae 0.587754 contra 0.587754; M1 rmse 0.852464 contra 0.852464; M1 deviance 1.048960 contra 1.048960; M4 mae 0.575637 contra 0.575637; M4 rmse 0.839071 contra 0.839071; M4 deviance 1.007328 contra 1.007328
+2026-10-21 17:37:08  ensaio do teste, conferência de M1 e M4 contra parte2/ensaio/ablacao_sensibilidade_2023.csv, 6 casas: M1 mae 0.588104 contra 0.588104; M1 rmse 0.853168 contra 0.853168; M1 deviance 1.050205 contra 1.050205; M4 mae 0.581558 contra 0.581558; M4 rmse 0.845405 contra 0.845405; M4 deviance 1.017706 contra 1.017706
+2026-10-21 17:37:08  validação: gravados ablacao_blocos2_2023.csv, previsoes_ablacao_blocos2_2023.csv e conferencia_2023.json
+2026-10-21 17:37:08  validação: fim; M1 e M4 repetem a Parte 1 e o ensaio da Parte 2 na 6ª casa; nenhuma linha de alvo em 2024 foi usada e nenhuma métrica de 2024 foi calculada
+2026-10-21 17:37:33  congelamento: CONGELADO_parte4.tsv gravado em 2026-10-21 17:37:33 (sha256 4dda5291632f2c629d18f32f5fb035842493d826cf9cbc41d8853ba93f0f83ff): parte4/protocolo_parte4.md 667442f96dcfac65e2de00d99d08fde07d668937ad8fe7e1b9109293049f8521; ablacao_blocos2.py eb327b5414d691e8e276dccf00f66fca3110649eba1f07cc6fd3da829b9ba6e3; parte2/comum2.py b1637bd6218d6226a7a602d7ae5eeb9abf9a6db0e67b511789eeb2ed8516e122; até aqui nenhuma linha de alvo em 2024 foi usada e nenhuma métrica de 2024 foi calculada
+2026-10-21 17:37:39  teste: início; os 3 arquivos do CONGELADO_parte4.tsv e o comum.py da Parte 1 iguais aos congelados; primeira leitura da base com as linhas de alvo em 2024
+2026-10-21 17:37:40  teste, M1 (16 atributos), corte fixo, 1.992 linhas de 2024: MAE 0.568209, RMSE 0.834472, deviance 1.024669
+2026-10-21 17:37:40  teste, M2 (24 atributos), corte fixo, 1.992 linhas de 2024: MAE 0.568289, RMSE 0.833105, deviance 1.024970
+2026-10-21 17:37:40  teste, M3 (27 atributos), corte fixo, 1.992 linhas de 2024: MAE 0.568763, RMSE 0.826067, deviance 0.991567
+2026-10-21 17:37:40  teste, M4 (30 atributos), corte fixo, 1.992 linhas de 2024: MAE 0.567592, RMSE 0.826353, deviance 0.990417
+2026-10-21 17:37:40  teste: gravados ablacao_blocos2_2024.csv e previsoes_ablacao_blocos2_2024.csv
+2026-10-21 17:37:40  teste, conferência de M1 e M4 contra parte2/ablacao_sensibilidade_2024.csv, 6 casas: M1 mae 0.568209 contra 0.568209; M1 rmse 0.834472 contra 0.834472; M1 deviance 1.024669 contra 1.024669; M4 mae 0.567592 contra 0.567592; M4 rmse 0.826353 contra 0.826353; M4 deviance 0.990417 contra 0.990417
+2026-10-21 17:37:40  teste: fim; M1 e M4 repetem a Parte 2 na 6ª casa; gravado resumo_parte4.json

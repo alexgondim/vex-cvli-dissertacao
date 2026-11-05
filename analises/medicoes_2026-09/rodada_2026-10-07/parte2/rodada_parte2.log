@@ -1,0 +1,29 @@
+2026-10-13 14:57:57  antes do protocolo: conferência do otimizador da binomial negativa só em linhas de treino (corte fixo e 24 janelas de 2022 e 2023), sem previsão nem métrica; base lida sem as linhas de 2024
+2026-10-13 14:58:16  antes do protocolo: corte fixo convergiu True; janelas de 2022 e 2023: 23 de 24 convergiram
+2026-10-13 14:59:02  antes do protocolo: conferência do otimizador da binomial negativa só em linhas de treino (corte fixo e 24 janelas de 2022 e 2023), sem previsão nem métrica; base lida sem as linhas de 2024
+2026-10-13 15:01:12  antes do protocolo: corte fixo convergiu True; janelas de 2022 e 2023: 24 de 24 convergiram
+2026-10-13 15:04:40  protocolo: protocolo_parte2.md gravado em 2026-10-13 15:04:40 (sha256 510d46a0bc286ce86b903b4dfa5a3f9012aa1e9488fac5131572f8b3c8519bc7), antes de qualquer conta com alvo de 2024
+2026-10-13 15:04:50  ensaio, corte fixo: início, avaliação nas linhas de alvo em 2023
+2026-10-13 15:04:51  ensaio, corte fixo: binomial negativa convergiu True (iterações 207, recomeços 0, maior |gradiente| 3.7e-09); gradiente analítico conferido, erro relativo 1.0e-09
+2026-10-13 15:05:01  ensaio, corte fixo: fim; gravados metricas_corte_fixo.csv, previsoes_corte_fixo.csv e nb_corte_fixo.json
+2026-10-13 15:05:03  ensaio, ablação e sensibilidade: início, avaliação nas linhas de alvo em 2023
+2026-10-13 15:05:09  ensaio, ablação e sensibilidade: fim; gravados ablacao_sensibilidade_2023.csv e previsoes_ablacao_sensibilidade_2023.csv
+2026-10-13 15:05:18  ensaio, janela: início, 24 reajustes, de 2022-01 a 2023-12
+2026-10-13 15:05:35  ensaio, janela: gradiente analítico conferido no primeiro ajuste, erro relativo 8.3e-10
+2026-10-13 15:06:55  ensaio, janela: fim; binomial negativa convergiu em 24 de 24 ajustes; gravados metricas_mensais.csv, metricas_janela.csv, previsoes_janela.csv e nb_janela.json
+2026-10-13 15:07:04  ensaio, junção e conferências: início
+2026-10-13 15:07:05  ensaio, conferências: M4 da ablação = modelo do corte fixo até a 6ª casa; 1.992 linhas em cada linha de metricas.csv; 166 em cada linha de metricas_mensais.csv; números da conferência do despacho repetidos até a 6ª casa; binomial negativa convergiu no corte fixo
+2026-10-13 15:07:05  ensaio, junção: gravados metricas.csv, previsoes_ensaio.csv e binomial_negativa.json
+2026-10-13 15:07:52  congelamento: CONGELADO_parte2.tsv gravado em 2026-10-13 15:07:52, com o protocolo e 8 programas (sha256 f0815a873262ae417ba2387e054f1a8997423c72083bbefbcd5452ed74b716e2)
+2026-10-13 15:08:01  teste, corte fixo: início, avaliação nas linhas de alvo em 2024
+2026-10-13 15:08:02  teste, corte fixo: binomial negativa convergiu True (iterações 207, recomeços 0, maior |gradiente| 3.7e-09); gradiente analítico conferido, erro relativo 1.0e-09
+2026-10-13 15:08:14  teste, corte fixo: fim; gravados metricas_corte_fixo.csv, previsoes_corte_fixo.csv e nb_corte_fixo.json
+2026-10-13 15:08:21  teste, ablação e sensibilidade: início, avaliação nas linhas de alvo em 2024
+2026-10-13 15:08:23  teste, ablação e sensibilidade: fim; gravados ablacao_sensibilidade_2024.csv e previsoes_ablacao_sensibilidade_2024.csv
+2026-10-13 15:08:32  teste, janela: início, 36 reajustes, de 2022-01 a 2024-12
+2026-10-13 15:08:52  teste, janela: gradiente analítico conferido no primeiro ajuste, erro relativo 8.3e-10
+2026-10-13 15:11:27  teste, janela: fim; binomial negativa convergiu em 36 de 36 ajustes; gravados metricas_mensais.csv, metricas_janela.csv, previsoes_janela.csv e nb_janela.json
+2026-10-13 15:11:38  teste, junção e conferências: início
+2026-10-13 15:11:38  teste, conferências: M4 da ablação = modelo do corte fixo até a 6ª casa; 1.992 linhas em cada linha de metricas.csv; 166 em cada linha de metricas_mensais.csv; janela de 2022 e 2023 igual à do ensaio até a 6ª casa
+2026-10-13 15:11:38  teste, junção: gravados metricas.csv, previsoes_teste.csv e binomial_negativa.json
+2026-10-13 15:11:49  exportação: metricas.csv e metricas_mensais.csv copiados para painel_mensal/dados_modelo/, e teste.json gravado ali; explicacoes.csv e rodada.json sem mudança

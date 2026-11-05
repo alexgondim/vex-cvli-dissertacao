@@ -1,0 +1,15 @@
+n,arquivo,local,coluna,ano,modelo_ou_bloco,numero,valor,valor_pleno
+1,ablacao_blocos2_2023.csv,linha 14,deviance,2023,M1,deviance de Poisson (média das 12 dobras),"1,048960",1.0489600588892374
+2,ablacao_blocos2_2023.csv,linha 28,deviance,2023,M2,deviance de Poisson (média das 12 dobras),"1,046502",1.04650168640941
+3,ablacao_blocos2_2023.csv,linha 42,deviance,2023,M3,deviance de Poisson (média das 12 dobras),"1,005707",1.0057070874958274
+4,ablacao_blocos2_2023.csv,linha 56,deviance,2023,M4,deviance de Poisson (média das 12 dobras),"1,007328",1.0073281644542258
+5,ablacao_blocos2_2024.csv,linha 2,deviance,2024,M1,deviance de Poisson (corte fixo),"1,024669",1.0246691927254143
+6,ablacao_blocos2_2024.csv,linha 3,deviance,2024,M2,deviance de Poisson (corte fixo),"1,024970",1.0249698390751252
+7,ablacao_blocos2_2024.csv,linha 4,deviance,2024,M3,deviance de Poisson (corte fixo),"0,991567",0.9915668315713356
+8,ablacao_blocos2_2024.csv,linha 5,deviance,2024,M4,deviance de Poisson (corte fixo),"0,990417",0.9904166468870066
+9,resumo_parte4.json,ganho_do_bloco/2023_media_das_12_dobras/temporal/deviance,deviance,2023,temporal (M2 − M1),ganho do bloco em deviance,"-0,002458",-0.0024583724798272755
+10,resumo_parte4.json,ganho_do_bloco/2023_media_das_12_dobras/espacial/deviance,deviance,2023,espacial (M3 − M2),ganho do bloco em deviance,"-0,040795",-0.040794598913582725
+11,resumo_parte4.json,ganho_do_bloco/2023_media_das_12_dobras/perfil/deviance,deviance,2023,perfil (M4 − M3),ganho do bloco em deviance,"0,001621",0.0016210769583984153
+12,resumo_parte4.json,ganho_do_bloco/2024_corte_fixo/temporal/deviance,deviance,2024,temporal (M2 − M1),ganho do bloco em deviance,"0,000301",0.0003006463497108314
+13,resumo_parte4.json,ganho_do_bloco/2024_corte_fixo/espacial/deviance,deviance,2024,espacial (M3 − M2),ganho do bloco em deviance,"-0,033403",-0.03340300750378944
+14,resumo_parte4.json,ganho_do_bloco/2024_corte_fixo/perfil/deviance,deviance,2024,perfil (M4 − M3),ganho do bloco em deviance,"-0,001150",-0.0011501846843291474

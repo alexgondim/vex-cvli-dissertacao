@@ -1,0 +1,128 @@
+== entradas ==
+  CVLI.xlsx                        c377aa209a06cb248dc676b97286ad11d832e2402aeb8c87386798601d32b361
+  POPULAÇAO.xlsx                   7be2624d3a3c3d5179eada1f3531a4162e3275e8b419801e1a3495c1af8af9c9
+  AnexoI                           a4c696b02f81b826c6ec9e1307ac92486d51e612d0f0c79890d18854ab8df957
+  mapeamento_bairros.csv           bbf5f730a802a01ad166491526e0dbb56a6aaaaa79770d79c9af65ac15f80898
+  bairros_salvador.geojson         cda68c81dc210cb232926ecf3eaa29c2eaffd6856833403bb85396018bc97183
+  dicionario_eventos (orientador)  f5a2d1f0511a57a06334dc651f95b59734751a8bbfc2b1e2fb4d636c37cebad8
+  dicionario_painel (orientador)   11f5fd5cdd83f9236f43227a85a1ca186a1b3a3c2d6cfea727c23a24fb2e5e1e
+  base empilhada (conferência)     f739055b2e3f6235bdabda007ddbca6d7ff54f6ad8a64ae9984a7b940e544b60
+
+== CVLI.xlsx ==
+  registros: 7766 | por ano: {2018: 1150, 2019: 1018, 2020: 1177, 2021: 1313, 2022: 1159, 2023: 1036, 2024: 913}
+  hora inteira de 0 a 23 em todos os registros; sexo não informado: 1; idade 0 de 2018 como ausente: 51
+
+== bairros ==
+  bairros: 166 | grafia da malha: 159 | da fonte em caixa de título: 7 | contrabarra trocada: ['Vila Ruy Barbosa/Jardim Cruzeiro']
+  rótulos diferentes dos da entrega de 25/09: nenhum
+
+== RISP (POPULAÇAO.xlsx) ==
+  bairros na tabela: 168 | da base sem RISP na tabela: nenhum | da tabela fora da base: ['ILHA DE BOM JESUS DOS PASSOS', 'ILHA DOS FRADES / ILHA DE SANTO ANTONIO']
+  RISP da tabela contra a maioria por bairro do CVLI.xlsx: 0 divergências em 166 bairros 
+  registro a registro contra a coluna RISP 2025: coincide em 7760 de 7766; divergem: {('BAIRRO DA PAZ', 2023, 'CENTRAL'): 1, ('IMBUI', 2022, 'CENTRAL'): 1, ('ITAPUA', 2018, 'CENTRAL'): 1, ('ITAPUA', 2022, 'CENTRAL'): 2, ('PIATA', 2024, 'CENTRAL'): 1}
+
+== AISP (Portaria SSP 435/2020, Anexo I) ==
+  bairros sem AISP: nenhum | diferente da AISP da base empilhada: nenhum
+  AISP distintas: 16 | cada AISP numa só RISP: True
+  RISP por AISP: {1: 'BTS', 2: 'BTS', 3: 'BTS', 4: 'BTS', 5: 'BTS', 6: 'ATLÂNTICO', 7: 'ATLÂNTICO', 8: 'BTS', 9: 'ATLÂNTICO', 10: 'CENTRAL', 11: 'CENTRAL', 12: 'ATLÂNTICO', 13: 'CENTRAL', 14: 'ATLÂNTICO', 15: 'ATLÂNTICO', 16: 'ATLÂNTICO'}
+
+== eventos.csv ==
+  linhas 7766 | colunas 13: ['id_ocorrencia', 'data', 'ano', 'mes', 'dia_semana', 'turno', 'bairro', 'risp', 'aisp', 'tipo_crime', 'classificacao', 'sexo_vitima', 'idade_vitima']
+
+== painel_bairro_mes_features.csv (base bairro-mês) ==
+  grade: 166 bairros x 84 meses = 13944 células, soma 7766
+  linhas 11952 (72 meses de alvo x 166 bairros) | colunas 35 | atributos do modelo 30
+  partição pelo ano do alvo: {'treino': 7968, 'validacao': 1992, 'teste': 1992}
+
+== conferências (sobre os arquivos gravados) ==
+  1. alvo(b,t) = cvli_lag1(b,t+1) em 11786 pares: True
+  2. alvo = recontagem dos eventos de t+1 em 11952 linhas: True
+  3. proporções e idade média recalculadas só com os eventos da janela t-11..t: maior diferença 0.0e+00: True
+  4. n_vitimas_hist12 = 12 x cvli_ma12: maior desvio 0.0e+00 (leitura em precisão plena)
+  5. soma da grade = 7766; soma do alvo + defasagens do primeiro mês de referência = 7766
+
+== números da seção de dados ==
+  [registros] registros em 2018: 1.150
+  [registros] registros em 2019: 1.018
+  [registros] registros em 2020: 1.177
+  [registros] registros em 2021: 1.313
+  [registros] registros em 2022: 1.159
+  [registros] registros em 2023: 1.036
+  [registros] registros em 2024: 913
+  [registros] registros, total: 7.766
+  [naturezas] Homicídio Doloso: 7.423
+  [naturezas] Latrocínio: 128
+  [naturezas] Lesão Corporal Seguida de Morte: 112
+  [naturezas] Feminicídio: 103
+  [naturezas por ano] Feminicídio, 2018: 7
+  [naturezas por ano] Feminicídio, 2019: 13
+  [naturezas por ano] Feminicídio, 2020: 19
+  [naturezas por ano] Feminicídio, 2021: 14
+  [naturezas por ano] Feminicídio, 2022: 21
+  [naturezas por ano] Feminicídio, 2023: 20
+  [naturezas por ano] Feminicídio, 2024: 9
+  [naturezas por ano] Homicídio Doloso, 2018: 1.115
+  [naturezas por ano] Homicídio Doloso, 2019: 977
+  [naturezas por ano] Homicídio Doloso, 2020: 1.125
+  [naturezas por ano] Homicídio Doloso, 2021: 1.257
+  [naturezas por ano] Homicídio Doloso, 2022: 1.105
+  [naturezas por ano] Homicídio Doloso, 2023: 982
+  [naturezas por ano] Homicídio Doloso, 2024: 862
+  [naturezas por ano] Latrocínio, 2018: 16
+  [naturezas por ano] Latrocínio, 2019: 16
+  [naturezas por ano] Latrocínio, 2020: 17
+  [naturezas por ano] Latrocínio, 2021: 28
+  [naturezas por ano] Latrocínio, 2022: 18
+  [naturezas por ano] Latrocínio, 2023: 15
+  [naturezas por ano] Latrocínio, 2024: 18
+  [naturezas por ano] Lesão Corporal Seguida de Morte, 2018: 12
+  [naturezas por ano] Lesão Corporal Seguida de Morte, 2019: 12
+  [naturezas por ano] Lesão Corporal Seguida de Morte, 2020: 16
+  [naturezas por ano] Lesão Corporal Seguida de Morte, 2021: 14
+  [naturezas por ano] Lesão Corporal Seguida de Morte, 2022: 15
+  [naturezas por ano] Lesão Corporal Seguida de Morte, 2023: 19
+  [naturezas por ano] Lesão Corporal Seguida de Morte, 2024: 24
+  [idade] idade vazia em 2018: 51
+  [idade] idade vazia em 2019: 48
+  [idade] idade vazia em 2020: 33
+  [idade] idade vazia em 2021: 48
+  [idade] idade vazia em 2022: 48
+  [idade] idade vazia em 2023: 51
+  [idade] idade vazia em 2024: 52
+  [idade] idade vazia, total: 331 de 7.766 (4,3%)
+  [turno] proporção geral, madrugada: 20,4% (1.586)
+  [turno] proporção geral, manha: 19,7% (1.531)
+  [turno] proporção geral, tarde: 22,9% (1.777)
+  [turno] proporção geral, noite: 37,0% (2.872)
+  [território] polígonos no GeoJSON: 170
+  [território] polígonos sem bairro na base: 4: Areia Branca, Ilha de Bom Jesus dos Passos, Ilha dos Frades/Ilha de Santo Antônio, Itinga
+  [território] bairros da base sem polígono: 0
+  [território] rótulos iguais a NOME_BAIRR sem nenhuma troca: 164 de 166
+  [território] AISP / RISP: 16 / 3
+  [território] bairros por RISP: BTS 67, CENTRAL 52, ATLÂNTICO 47
+  [base bairro-mês] células da grade: 13.944
+  [base bairro-mês] linhas modeláveis: 11.952
+  [base bairro-mês] linhas de treino: 7.968
+  [base bairro-mês] linhas de validacao: 1.992
+  [base bairro-mês] linhas de teste: 1.992
+  [alvo] zeros no alvo, base modelável: 67,2%
+  [alvo] zeros no alvo, teste 2024: 72,1%
+  [alvo] média do alvo no teste: 0,458
+  [alvo] máximo do alvo no teste: 8
+  [alvo] índice de dispersão no treino (variância amostral / média): 1,973
+  [janela] linhas com n = 0: 1.566 de 11.952 (13,1%)
+  [janela] linhas com n = 0, treino: 1.097 (13,8%)
+  [janela] linhas com n = 0, validacao: 175 (8,8%)
+  [janela] linhas com n = 0, teste: 294 (14,8%)
+  [janela] treino: janelas com até 2 ocorrências (n <= 2, inclui n = 0): 34,7%
+  [janela] treino: janelas com 1 ou 2 ocorrências: 20,9%
+  [bloco criminal] posto dos 16 atributos criminais (treino): 12 de 16
+  [bloco criminal] VIF: infinito nos 16 (cvli_ma3, cvli_ma6, cvli_ma12 e cvli_trend são combinação exata das defasagens)
+  [bloco criminal] VIF máximo entre as 12 defasagens (treino): 1,48
+  [bloco criminal] correlação máxima entre pares de defasagens (treino): 0,390
+  [bloco criminal] maior desvio entre n_vitimas_hist12 e 12 x cvli_ma12: 0.0e+00
+  [perfil] Spearman entre prop_masc_hist12 e n_vitimas_hist12 (treino, n > 0): -0,339
+  [perfil] idade média: linhas em que a fórmula do dicionário de origem difere: 24,0% (2.458 de 10.262 com as duas fórmulas definidas)
+
+== dicionários ==
+  dicionario_eventos.csv: 13 linhas | dicionario_painel_features.csv: 35 linhas, na ordem das colunas do arquivo
