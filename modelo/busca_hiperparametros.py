@@ -1,9 +1,14 @@
-"""Item 4 do bloco 26: busca dos hiperparâmetros, só em 2023.
+"""Busca dos hiperparâmetros: as 36 configurações da grade, nas 12 dobras de 2023, com os 30 atributos.
 
-As 36 configurações do protocolo, nas 12 dobras de 2023, com os 30 atributos. Por configuração: MAE, RMSE e
-deviance de Poisson média (piso de 0,01 só na deviance) nas 1.992 previsões. Escolha pelo critério do protocolo.
-Cada configuração é gravada ao terminar (busca_configuracoes.csv e previsoes_busca.csv); uma configuração já
-gravada é pulada, e a busca pode ser retomada.
+Lê a base por bairro e mês. Para cada configuração, calcula MAE, RMSE e deviance de Poisson média (piso de 0,01 só na
+deviance) nas 1.992 previsões das dobras. Escolhe a de menor deviance, arredondada na 6ª casa; no empate, a de menor
+ordem na grade.
+
+Grava em `resultados/`: `busca_configuracoes.csv` e `previsoes_busca.csv`, uma configuração por vez, ao terminar cada
+uma; `escolha.json`, com a configuração escolhida; e `busca_ranking.csv`. Uma configuração já gravada é pulada: a
+busca retoma do que já gravou.
+
+Da raiz do repositório: python modelo/busca_hiperparametros.py
 """
 import json
 import time
@@ -12,13 +17,12 @@ import pandas as pd
 
 import comum
 
-assert comum.PROTOCOLO.exists(), "o protocolo vem antes do primeiro ajuste"
 TABELA = comum.PASTA / "busca_configuracoes.csv"
 PREVISOES = comum.PASTA / "previsoes_busca.csv"
 
 base = comum.ler_base()
 feitas = set(pd.read_csv(TABELA)["ordem"]) if TABELA.exists() else set()
-comum.registrar("etapa 3, busca: início (%d de 36 já gravadas)" % len(feitas))
+comum.registrar("busca: início (%d de 36 já gravadas)" % len(feitas))
 for i, config in enumerate(comum.GRADE, 1):
     if i in feitas:
         continue

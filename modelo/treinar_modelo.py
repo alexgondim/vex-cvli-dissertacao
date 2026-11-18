@@ -1,11 +1,16 @@
-"""Itens 8 e 9 do bloco 26: modelo do corte fixo e as contribuições dele.
+"""Treina o modelo, uma vez, com a configuração escolhida, nas 7.968 linhas de alvo de 2019 a 2022, e calcula as
+contribuições de cada atributo nas 11.952 linhas.
 
-Treina 1 vez, com a configuração escolhida, nas 7.968 linhas de alvo de 2019 a 2022. Grava o modelo e as
-estimativas das 11.952 linhas, com a marca de treino, validação ou teste; o alvo não entra nesses arquivos.
-Contribuições (pred_contribs) nas 11.952 linhas, na escala do log da contagem esperada, com a conferência da
-aditividade. Interações (pred_interactions) nas 1.992 linhas de alvo em 2024: para as 3 proporções de turno e a
-tendência, a interação com bairro, com aisp e com risp e a soma das três. Como no bloco 9, a interação(i, j) é o
-elemento [i, j] da matriz de cada linha, sem dobrar.
+Lê `resultados/escolha.json` e a base por bairro e mês. As contribuições (pred_contribs) ficam na escala do log da
+contagem esperada; o programa imprime a maior diferença da aditividade (soma das 30 contribuições mais o valor de
+base, contra a margem). Calcula também as interações (pred_interactions) nas 1.992 linhas de 2024, das 3 proporções
+de turno e da tendência com bairro, aisp e risp; a interação(i, j) é o elemento [i, j] da matriz de cada linha, sem
+dobrar.
+
+Grava em `resultados/`: `modelo_treinado.json`; `estimativas_corte_fixo.csv`, com a margem e a estimativa das 11.952
+linhas e a marca de treino, validação ou teste, sem o alvo; `contribuicoes_corte_fixo.csv`; e `interacoes_2024.csv`.
+
+Da raiz do repositório: python modelo/treinar_modelo.py
 """
 import json
 
@@ -15,7 +20,6 @@ import xgboost as xgb
 
 import comum
 
-assert (comum.PASTA / "CONGELADO.tsv").exists(), "o modelo do corte fixo vem depois do congelamento"
 DEPENDENCIA = ["prop_madrugada_hist12", "prop_tarde_hist12", "prop_noite_hist12", "cvli_trend"]
 config = json.loads(comum.ESCOLHA.read_text(encoding="utf-8"))["configuracao"]
 base = comum.ler_base()
@@ -23,19 +27,19 @@ nomes = comum.atributos()
 treino = base["ano_alvo"].between(2019, 2022)
 assert treino.sum() == 7968
 
-comum.registrar("etapa 7, modelo do corte fixo: treino com %d linhas, configuração %s" % (treino.sum(), config))
+comum.registrar("modelo do corte fixo: treino com %d linhas, configuração %s" % (treino.sum(), config))
 modelo = comum.estimador(config).fit(base.loc[treino, nomes], base.loc[treino, comum.ALVO].to_numpy(float))
-modelo.save_model(comum.PASTA / "modelo_corte_fixo.json")
+modelo.save_model(comum.PASTA / "modelo_treinado.json")
 X = base[nomes]
 identificacao = base[["bairro", "ano_alvo", "mes_alvo", "divisao"]].reset_index(drop=True)
 margem = modelo.predict(X, output_margin=True)
 estimativa = modelo.predict(X)
 estimativas = identificacao.assign(margem=margem, estimativa=estimativa)
 estimativas.to_csv(comum.PASTA / "estimativas_corte_fixo.csv", index=False)
-comum.registrar("modelo gravado (modelo_corte_fixo.json) e estimativas das %d linhas: %s"
+comum.registrar("modelo gravado (modelo_treinado.json) e estimativas das %d linhas: %s"
                 % (len(estimativas), estimativas["divisao"].value_counts().to_dict()))
 
-comum.registrar("etapa 8, contribuições do corte fixo")
+comum.registrar("contribuições do corte fixo")
 contrib = comum.contribuicoes(modelo, X)
 desvio = np.abs(contrib.sum(axis=1) - margem)
 comum.registrar("aditividade nas %d linhas: maior |soma das 30 contribuições + valor de base - margem| = %.3g"

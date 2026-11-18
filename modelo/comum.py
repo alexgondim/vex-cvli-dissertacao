@@ -1,8 +1,11 @@
-"""Partes comuns da rodada de 07/10 (bloco 26): leitura da base de 27/09, atributos por bloco, grade, estimador,
-métricas, dobras de 2023 e registro no log.
+"""Partes comuns do modelo: leitura da base por bairro e mês, atributos por bloco, grade de hiperparâmetros,
+estimador, métricas, as 12 dobras de 2023 e as contribuições.
 
-Os programas desta pasta rodam da raiz do repositório:
-PYTHONUTF8=1 ./venv/Scripts/python.exe analises/medicoes_2026-09/rodada_2026-10-07/<programa>.py
+Lê `dados/processados/painel_bairro_mes_features.csv` e `dados/processados/dicionario_painel_features.csv`. Não grava
+arquivo: os programas que o importam gravam em `resultados/` (a constante `PASTA`).
+
+É importado pelos programas de `modelo/` e, pelo `experimentos/validacao_comum.py`, pelos de `experimentos/`. Os
+programas rodam da raiz do repositório, por exemplo: python modelo/busca_hiperparametros.py
 """
 import datetime
 import hashlib
@@ -13,15 +16,11 @@ import numpy as np
 import pandas as pd
 import xgboost as xgb
 
-PASTA = Path(__file__).resolve().parent
-RAIZ = PASTA.parents[2]
-PASTA_BASE = RAIZ / "analises" / "medicoes_2026-09" / "base_2018_2024"
+RAIZ = Path(__file__).resolve().parents[1]
+PASTA = RAIZ / "resultados"
+PASTA_BASE = RAIZ / "dados" / "processados"
 BASE = PASTA_BASE / "painel_bairro_mes_features.csv"
 DICIONARIO = PASTA_BASE / "dicionario_painel_features.csv"
-SHA_BASE = "2a8288006c2323fa2f4995b82afa7e079f1944db804a0091c6ffd01224101443"
-GRADE_24_09 = RAIZ / "analises" / "medicoes_2026-09" / "congelado_2026-09-24" / "hiperparametros_busca.py"
-LOG = PASTA / "rodada.log"
-PROTOCOLO = PASTA / "protocolo.md"
 ESCOLHA = PASTA / "escolha.json"
 
 ALVO = "target_cvli"
@@ -37,7 +36,7 @@ CATEGORICAS = BLOCOS["espacial"]
 SEMENTE = 42
 PISO = 0.01  # só na deviance
 CASAS_DO_EMPATE = 6
-# a grade de 24/09, na mesma ordem (itertools.product: taxa, árvores, profundidade, peso mínimo)
+# a grade de busca, na ordem do itertools.product: taxa, árvores, profundidade, peso mínimo
 TAXAS, ARVORES, PROFUNDIDADES, PESOS = [0.05, 0.1, 0.3], [100, 300], [3, 6], [1, 5, 20]
 GRADE = [dict(learning_rate=a, n_estimators=b, max_depth=c, min_child_weight=d)
          for a, b, c, d in itertools.product(TAXAS, ARVORES, PROFUNDIDADES, PESOS)]
@@ -51,8 +50,6 @@ def agora():
 
 def registrar(texto):
     linha = "%s  %s" % (agora(), texto)
-    with open(LOG, "a", encoding="utf-8") as f:
-        f.write(linha + "\n")
     print(linha, flush=True)
 
 
@@ -73,9 +70,8 @@ def em_ordem(nomes):
 
 
 def ler_base():
-    """Base de 27/09, conferida pelo sha256. Bairro, AISP e RISP viram categorias com o conjunto inteiro de
-    valores, igual em todas as dobras; proporções e idade ausentes continuam ausentes."""
-    assert sha256(BASE) == SHA_BASE, "a base não é a de 27/09"
+    """Base por bairro e mês. Bairro, AISP e RISP viram categorias com o conjunto inteiro de valores, igual em
+    todas as dobras; proporções e idade ausentes continuam ausentes."""
     b = pd.read_csv(BASE)
     for c in CATEGORICAS:
         b[c] = pd.Categorical(b[c], categories=sorted(b[c].unique()))
