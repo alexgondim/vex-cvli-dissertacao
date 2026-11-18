@@ -1,28 +1,21 @@
-"""Mock do painel mensal do VEX-CVLI, para discussão com o orientador.
+"""Painel mensal do VEX-CVLI, em três abas: exploração, explicação e diagnóstico.
 
-O painel não treina nada. A barra lateral tem só o caso explicado (bairro e mês-alvo), que aparece só com a aba de
-explicação aberta, e a área principal, 3 abas. A exploração (seleção própria de bairros, vazia por padrão, filtros,
-mapa no modo observado, distribuições e série mensal filtrada) lê a base de 27/09; as distribuições comparam a
-seleção com Salvador, e a série soma os bairros da seleção (sem seleção, Salvador inteira).
-Ao lado do mapa ficam o turno e a idade da vítima, e na linha de baixo, a natureza, o gênero da vítima e a RISP. Turno
-e natureza ficam em barras, idade em histograma por faixa, gênero da vítima em rosca de 2 anéis, com o bairro por fora
-e Salvador por dentro, e RISP em pizza. A explicação (faixa de contexto, as 4 visões e mapa no modo contribuição,
-por bairro, AISP ou RISP) lê as saídas do modelo do corte fixo da rodada de 07/10, em dados_modelo/ (modelo.py); sem
-essa pasta, fica como espaço reservado. A aba de diagnóstico lê os arquivos do teste de 2024, gravados pela Parte 2
-em dados_modelo/.
+O painel só lê arquivos prontos. Ele não treina nada e não grava arquivo.
+A aba de exploração lê os registros e a base por bairro e mês de `dados/processados/`, pelo `dados.py`. Ela tem a
+seleção de bairros, vazia por padrão, os filtros, o mapa no modo observado, as distribuições e a série mensal. As
+distribuições comparam a seleção com Salvador. A série soma os bairros da seleção; sem seleção, mostra Salvador
+inteira. Ao lado do mapa ficam o turno e a idade da vítima. Na linha de baixo ficam a natureza, o gênero da vítima e
+a RISP.
+A aba de explicação lê as contribuições do modelo em `resultados/`, pelo `saidas_do_modelo.py`. Ela tem a faixa de
+contexto, as 4 visões e o mapa no modo contribuição, por bairro, AISP ou RISP. A barra lateral, com o bairro e o
+mês-alvo explicados, só aparece nessa aba. Sem os arquivos de `resultados/`, a aba fica como espaço reservado.
+A aba de diagnóstico lê as métricas do teste de 2024 em `resultados/`.
 
-Da raiz do projeto: ./venv/Scripts/python.exe -m streamlit run painel_mensal/app.py
-O .streamlit/config.toml desta pasta fixa o servidor em localhost e sem estatísticas de uso, e
-esconde a barra de ferramentas do Streamlit; se localhost e estatísticas desligadas não estiverem
-valendo, o mock não carrega dado nenhum.
-
-Com o parâmetro de demonstração (... app.py -- --demonstracao), a aba de explicação mostra só as 4 visões de um
-modelo treinado em dado sintético (demonstracao.py), com tarja em cada uma, e a agregação por região; as outras
-abas não mudam.
-Sem o parâmetro, o mock não importa o módulo de demonstração.
+Da raiz do repositório: python -m streamlit run painel/app.py
+O `.streamlit/config.toml` desta pasta fixa o servidor em localhost, desliga as estatísticas de uso e esconde a barra
+de ferramentas do Streamlit. Fora de localhost ou com as estatísticas ligadas, o painel não lê dado nenhum.
 """
 import math
-import sys
 
 import pandas as pd
 import plotly.express as px
@@ -31,19 +24,15 @@ import streamlit as st
 from plotly.subplots import make_subplots
 
 import dados
-import modelo
+import saidas_do_modelo as modelo
 import rotulos
 import visoes_shap
-
-DEMONSTRACAO = "--demonstracao" in sys.argv[1:]
-if DEMONSTRACAO:
-    import demonstracao
 
 RESERVADO = "Aguarda a execução do modelo."
 DIAGNOSTICO = ("métricas do modelo (MAE, RMSE, deviance de Poisson) contra persistência, média sazonal, "
                "média móvel de 12 meses e binomial negativa; rodada: a definir")
 ABAS_DEPENDENCIA = ("madrugada", "tarde", "noite", "tendência")
-# nome por extenso de cada atributo das abas, como na tabela de atributos do capítulo
+# nome por extenso de cada atributo das abas
 EIXO_DEPENDENCIA = {"madrugada": "proporção de registros na madrugada (12 meses)",
                     "tarde": "proporção de registros na tarde (12 meses)",
                     "noite": "proporção de registros na noite (12 meses)",
@@ -53,7 +42,7 @@ ATRIBUTO_DA_ABA = {"madrugada": "prop_madrugada_hist12", "tarde": "prop_tarde_hi
 # corte fixo: treino com os meses-alvo até 2022, validação em 2023, teste em 2024
 ULTIMO_ANO_DE_TREINO = 2022
 ANO_DE_TESTE = 2024
-# os cartões têm só título; o que é cada visão, cada métrica e cada forma de validação fica no texto do capítulo
+# cada cartão tem título, legenda e a caixa "Como ler", com os textos de rotulos.py (legenda_e_ajuda)
 CABECALHO = "Proposta de interface. As visões de explicação aguardam a execução do modelo."
 CABECALHO_COM_MODELO = ("Proposta de interface. As visões de explicação mostram o modelo do corte fixo; a estimativa na "
                         "série e o diagnóstico ficam para depois do teste de 2024.")
@@ -64,14 +53,14 @@ PERIODO_TODO = (dados.MESES[0], dados.MESES[-1])
 ROTULO_TOTAL = "todos os atributos"
 # atributos no enxame e na mudança entre anos, com a chave fechada; a cascata mostra 1 a menos e soma os demais
 MOSTRADOS = 10
-# a cascata tem a largura da da demonstração (as capturas medem a letra por ela) e cresce com o número de barras
+# a cascata tem largura fixa, a que as capturas usam para medir a letra, e cresce com o número de barras
 LARGURA_CASCATA = 5.2
 TEXTO_CINZAS = ("Cinza: atributo categórico, sem valor alto ou baixo. Cinza-escuro: valor ausente, por janela sem "
                 "registros ou sem idade informada.")
-# entrada da estimativa na legenda da série: sem o modelo, e na demonstração, a de antes da rodada
+# entrada da estimativa na legenda da série: sem o modelo, a de antes da execução
 LEGENDA_ESTIMATIVA = "estimativa: após a execução do modelo"
 LEGENDA_ESTIMATIVA_COM_MODELO = "estimativa: entra depois do teste de 2024"
-# com os arquivos do teste de 2024 em dados_modelo/: estimativa na série e aba de diagnóstico, sem cabeçalho
+# com os arquivos do teste de 2024 em resultados/: estimativa na série e aba de diagnóstico, sem cabeçalho
 LEGENDA_ESTIMATIVA_DESENHADA = "estimativa (modelo do corte fixo)"
 COR_ESTIMATIVA = "#4b5563"
 ANO_DO_TESTE = 2024
@@ -109,7 +98,7 @@ COR_FEMININO = "#c2410c"
 CINZA_POLIGONO = "#b9bdc4"
 CINZA_CONTORNO = "#374151"
 VERMELHO = "#c0392b"
-# bairro selecionado em preto, porque as legendas das figuras do capítulo falam em contorno preto
+# bairro selecionado em preto, porque o texto abaixo das visões fala em contorno preto
 CONTORNO_SELECIONADO = "#000000"
 LARGURA_CONTORNO_SELECIONADO = 3
 FUNDO_RESERVADO = "#f1f3f5"
@@ -123,22 +112,26 @@ ESCALA_LARANJA = ["#fee6ce", "#fdd0a2", "#fdae6b", "#fd8d3c", "#f16913", "#d9480
 ESTILO_MAPA = "carto-positron-nolabels"
 TRANSPARENTE = [[0, "rgba(0,0,0,0)"], [1, "rgba(0,0,0,0)"]]
 ALTURA_MAPA = 560
+# o mapa da exploração é mais alto, para o cartão terminar junto com a coluna da direita (turno e idade, com legenda e
+# caixa "Como ler"), na janela das capturas (conteúdo de 1.030 px) e na de 1.490. Centro e zoom são os do quadro de
+# ALTURA_MAPA (dados.enquadramento): a altura a mais aparece metade em cima e metade embaixo, e a barra de cor desce
+# essa metade, para ficar no mesmo lugar sobre a baía
+ALTURA_MAPA_EXPLORACAO = 707
 # o quadro do mapa se ajusta aos 166 bairros (dados.enquadramento). As ilhas dos Frades e de Bom Jesus dos
 # Passos, sem registro, ficam cerca de 8 km a oeste do bairro mais a oeste e saem do quadro do cartão; quem
 # quiser vê-las arrasta o mapa. As legendas ficam onde não há bairro. A barra de cor fica à esquerda, sobre a
 # baía, entre a Ilha de Maré e a península de Itapagipe, com o topo TOPO_LEGENDA px abaixo da borda: no mapa
 # de 570 px da janela de 1490, é a altura que a deixa mais longe dos polígonos (16,5 px). A dos polígonos
 # sem cor fica no canto de baixo à direita, sobre o mar, ATRIBUICAO px acima da borda, logo acima da
-# atribuição do mapa de fundo (34 px com a margem; 40 px nas figuras do mapa do capítulo, com a letra maior)
+# atribuição do mapa de fundo (34 px com a margem; 40 px com a letra maior)
 TOPO_LEGENDA = 134
 ATRIBUICAO = 46
-# série na largura inteira, com a área do gráfico na proporção da agregação por região da demonstração, 2,8
-# para 1 (947 × 340 px na janela de 1490)
+# série na largura inteira, com a área do gráfico na proporção de 2,8 para 1 (947 × 340 px na janela de 1490)
 ALTURA_SERIE = 437
-# ao lado do mapa, o turno em cima e a idade da vítima embaixo, em 2 cartões com gráficos desta altura: com o título,
-# a borda e o espaçamento padrão entre os cartões, a coluna fecha na altura do cartão do mapa no modo observado (668 px
-# na janela de 1490)
+# ao lado do mapa, o turno em cima e a idade da vítima embaixo, em 2 cartões com gráficos desta altura; a idade tem
+# mais TITULO_EIXO_IDADE px, os do título do eixo x, para a área das barras ter a altura que tinha sem ele
 ALTURA_AO_LADO_DO_MAPA = 248
+TITULO_EIXO_IDADE = 30
 # histograma da idade: em cada faixa, a barra de Salvador atrás, com 85% da largura da faixa, e a do bairro na frente,
 # com 45%, as 2 centradas
 LARGURA_IDADE_CIDADE = 0.85
@@ -204,29 +197,32 @@ ESTATICO = {"staticPlot": True}
 # cartões lado a lado (7c com 7a, 7b com 7d) fecharem juntos na largura das capturas
 ALTURAS = {"normal": {"cascata": 427, "enxame": 510, "dependencia": 330, "anos": 361},
            "modelo": {"enxame": 442, "dependencia": 480, "anos": 552},
-           "modelo_30": {"enxame": 1300, "dependencia": 480, "anos": 1500},
-           "demonstracao": {"enxame": 545, "dependencia": 480, "anos": 552, "agregacao": 420}}
+           "modelo_30": {"enxame": 1300, "dependencia": 480, "anos": 1500}}
 
-st.set_page_config(page_title="VEX-CVLI, painel mensal (mock)", layout="wide")
+st.set_page_config(page_title="VEX-CVLI: painel mensal", layout="wide")
 
-# a base tem dados de vítimas: fora de localhost ou com estatísticas de uso ligadas, o mock para
+# a base tem dados de vítimas: fora de localhost ou com estatísticas de uso ligadas, o painel para
 # antes de ler qualquer arquivo
 if st.get_option("server.address") not in ("localhost", "127.0.0.1") or st.get_option("browser.gatherUsageStats"):
-    st.error("O mock só abre servido em localhost e sem estatísticas de uso. Da raiz do projeto: "
-             "./venv/Scripts/python.exe -m streamlit run painel_mensal/app.py --server.address localhost "
-             "--browser.gatherUsageStats false --client.toolbarMode minimal")
+    st.error("O painel só abre servido em localhost e sem estatísticas de uso. Da raiz do projeto: "
+             "python -m streamlit run painel/app.py")
     st.stop()
 
 # o crédito do mapa de fundo é do MapLibre, fora do alcance da figura; com os 12 px de origem ele fica abaixo
-# de 6 pt nas imagens do capítulo. O MapLibre também troca a seta do mouse pela mão de arrastar sobre o mapa;
+# de 6 pt numa captura reduzida a 16 cm. O MapLibre também troca a seta do mouse pela mão de arrastar sobre o mapa;
 # a seta fica, e arrastar e dar zoom continuam funcionando. Na barra lateral, a nota "com dados até" sai com
-# opacidade 0,6 no tema, 3,6:1 contra o fundo da barra; fica opaca, na cor do texto dos gráficos
+# opacidade 0,6 no tema, 3,6:1 contra o fundo da barra; fica opaca, na cor do texto dos gráficos. As legendas dos 16
+# cartões (os contêineres cartao_*), também com 0,6 no tema e 3,7:1 contra o branco do cartão, ficam do mesmo jeito. A
+# do gênero reserva a altura de 2 linhas, a das legendas da natureza e da RISP ao lado dela, para os 3 cartões
+# terminarem juntos
 # o seletor pega os 2 mapas, inclusive o da exploração com a chave nova que ele ganha a cada clique
 st.html("<style>.maplibregl-ctrl-attrib, .maplibregl-ctrl-attrib a { font-size: %dpx !important; }"
         "[class*='st-key-mapa'] .maplibregl-canvas-container, "
         "[class*='st-key-mapa'] .maplibregl-canvas-container:active, "
         "[class*='st-key-mapa'] .maplibregl-canvas { cursor: default !important; }"
-        "[data-testid='stSidebar'] [data-testid='stCaptionContainer'] { opacity: 1 !important; color: %s !important; }"
+        "[data-testid='stSidebar'] [data-testid='stCaptionContainer'], "
+        "[class*='st-key-cartao_'] [data-testid='stCaptionContainer'] { opacity: 1 !important; color: %s !important; }"
+        ".st-key-cartao_sexo [data-testid='stCaptionContainer'] p { min-height: 2lh; }"
         "</style>" % (rotulos.FONTE, rotulos.COR_TEXTO))
 
 
@@ -288,6 +284,14 @@ def numero_casas(v, casas):
     return ("%.*f" % (casas, v)).replace(".", ",")
 
 
+def legenda_e_ajuda(chave, valores=None):
+    """Logo abaixo do título do cartão `chave` (a do arquivo de textos): a legenda, em letra menor, e a caixa "Como
+    ler", fechada ao abrir o painel, com os campos de rotulos.AJUDA, cada um com o nome em negrito."""
+    st.caption(rotulos.legenda(chave, valores))
+    with st.expander(rotulos.ROTULO["rotulo_ajuda"], key="ajuda_" + chave):
+        st.markdown("\n\n".join("**%s.** %s" % (campo, texto) for campo, texto in rotulos.AJUDA[chave]))
+
+
 def meio_do_mes(p):
     return p.start_time + pd.Timedelta(days=14)
 
@@ -341,17 +345,21 @@ def aplicar_cliques(bairros):
         st.session_state["geracao_mapa_contribuicao"] = st.session_state.get("geracao_mapa_contribuicao", 0) + 1
 
 
-def figura_mapa(tabela, modo, agregacao, selecao, geo, quadro, nomes_sem_bairro, atributo_mapa=None, geo_aisp=None):
+def figura_mapa(tabela, modo, agregacao, selecao, geo, quadro, nomes_sem_bairro, atributo_mapa=None, geo_aisp=None,
+                altura=ALTURA_MAPA):
     """No modo contribuição, com o modelo (atributo_mapa dado), a coluna valor da tabela é a média do valor
     absoluto da contribuição nas linhas de 2024; sem o modelo, o mapa fica reservado. Na agregação por AISP (no modo
     observado e, com o modelo, no de contribuição), a tabela é a de dados.tabela_aisp e os polígonos são os de
-    geo_aisp, a união dos bairros de cada AISP. O contorno preto marca os bairros de `selecao`."""
+    geo_aisp, a união dos bairros de cada AISP. O contorno preto marca os bairros de `selecao`. O quadro (centro e
+    zoom) é o de ALTURA_MAPA; com `altura` maior, a barra de cor desce metade da diferença, com os polígonos, e a
+    nota dos polígonos sem cor fica a ATRIBUICAO px da borda de baixo."""
     chave = "properties." + dados.CHAVE_POLIGONO
     opacidade = OPACIDADE_OBSERVADO if modo == "observado" else OPACIDADE_CONTRIBUICAO
     centro, zoom = quadro
     fonte = dict(size=rotulos.FONTE, color=rotulos.COR_TEXTO)
+    folga = (altura - ALTURA_MAPA) / 2
     barra = dict(tickfont=fonte, thickness=12, lenmode="pixels", len=200, x=0.01, xanchor="left",
-                 y=1 - TOPO_LEGENDA / ALTURA_MAPA, yanchor="top", bgcolor="rgba(255,255,255,0.85)")
+                 y=1 - (TOPO_LEGENDA + folga) / altura, yanchor="top", bgcolor="rgba(255,255,255,0.85)")
     if modo == "observado" and agregacao == "aisp":
         # o 1º campo do customdata fica vazio: o clique numa AISP não muda a seleção de bairros
         texto = "AISP " + tabela["aisp"].astype(str) + ": " + tabela["valor"].map(registros)
@@ -359,7 +367,7 @@ def figura_mapa(tabela, modo, agregacao, selecao, geo, quadro, nomes_sem_bairro,
             tabela.assign(texto=texto, vazio=""), geojson=geo_aisp, locations="aisp",
             featureidkey="properties." + dados.CHAVE_AISP, color="valor", color_continuous_scale=ESCALA_VERMELHA,
             range_color=(0, max(1, int(tabela["valor"].max()))), custom_data=["vazio", "texto"],
-            map_style=ESTILO_MAPA, zoom=zoom, center=centro, opacity=opacidade, height=ALTURA_MAPA)
+            map_style=ESTILO_MAPA, zoom=zoom, center=centro, opacity=opacidade, height=altura)
         fig.update_traces(hovertemplate="%{customdata[1]}<extra></extra>")
         fig.update_layout(coloraxis_colorbar=dict(title=dict(text="registros<br>na AISP", font=fonte), **barra))
     elif modo == "observado":
@@ -369,7 +377,7 @@ def figura_mapa(tabela, modo, agregacao, selecao, geo, quadro, nomes_sem_bairro,
             tabela.assign(texto=texto), geojson=geo, locations="poligono", featureidkey=chave, color="valor",
             color_continuous_scale=ESCALA_VERMELHA, range_color=(0, max(1, int(tabela["valor"].max()))),
             custom_data=["bairro", "texto"], map_style=ESTILO_MAPA, zoom=zoom, center=centro,
-            opacity=opacidade, height=ALTURA_MAPA)
+            opacity=opacidade, height=altura)
         fig.update_traces(hovertemplate="%{customdata[1]}<extra></extra>")
         # título em duas linhas na agregação por RISP, para a barra caber na largura da baía
         fig.update_layout(coloraxis_colorbar=dict(
@@ -382,7 +390,7 @@ def figura_mapa(tabela, modo, agregacao, selecao, geo, quadro, nomes_sem_bairro,
             tabela.assign(texto=texto, vazio=""), geojson=geo_aisp, locations="aisp",
             featureidkey="properties." + dados.CHAVE_AISP, color="valor", color_continuous_scale=ESCALA_LARANJA,
             range_color=(0, float(tabela["valor"].max())), custom_data=["vazio", "texto"], map_style=ESTILO_MAPA,
-            zoom=zoom, center=centro, opacity=opacidade, height=ALTURA_MAPA)
+            zoom=zoom, center=centro, opacity=opacidade, height=altura)
         fig.update_traces(hovertemplate="%{customdata[1]}<extra></extra>")
         fig.update_layout(separators=",.", coloraxis_colorbar=dict(title=dict(text="média de<br>|contribuição|", font=fonte),
                                                                    **barra))
@@ -397,7 +405,7 @@ def figura_mapa(tabela, modo, agregacao, selecao, geo, quadro, nomes_sem_bairro,
             tabela.assign(texto=texto), geojson=geo, locations="poligono", featureidkey=chave, color="valor",
             color_continuous_scale=ESCALA_LARANJA, range_color=(0, float(tabela["valor"].max())),
             custom_data=["bairro", "texto"], map_style=ESTILO_MAPA, zoom=zoom, center=centro,
-            opacity=opacidade, height=ALTURA_MAPA)
+            opacity=opacidade, height=altura)
         fig.update_traces(hovertemplate="%{customdata[1]}<extra></extra>")
         fig.update_layout(separators=",.", coloraxis_colorbar=dict(title=dict(text="média de<br>|contribuição|", font=fonte),
                                                                    **barra))
@@ -412,7 +420,7 @@ def figura_mapa(tabela, modo, agregacao, selecao, geo, quadro, nomes_sem_bairro,
             colorscale=[[0, CINZA_POLIGONO], [1, CINZA_POLIGONO]], showscale=False, marker_opacity=opacidade,
             customdata=[[b, b + "<br>" + RESERVADO] for b in tabela["bairro"]],
             hovertemplate="%{customdata[1]}<extra></extra>", showlegend=False))
-        fig.update_layout(map=dict(style=ESTILO_MAPA, zoom=zoom, center=centro), height=ALTURA_MAPA)
+        fig.update_layout(map=dict(style=ESTILO_MAPA, zoom=zoom, center=centro), height=altura)
         fig.add_annotation(text=RESERVADO, x=0.99, y=0.99, xref="paper", yref="paper",
                            xanchor="right", yanchor="top", showarrow=False, bgcolor="rgba(255,255,255,0.92)",
                            bordercolor="#9aa0a6", borderpad=6, font=dict(size=rotulos.FONTE, color="#374151"))
@@ -434,7 +442,7 @@ def figura_mapa(tabela, modo, agregacao, selecao, geo, quadro, nomes_sem_bairro,
     # a legenda do plotly desenha o símbolo com o preenchimento, que aqui é transparente; por isso a
     # legenda dos polígonos sem cor é uma anotação com um quadrado vazado
     fig.add_annotation(text="<span style='color:%s;font-size:17px'>□</span> sem registro na base" % CINZA_CONTORNO,
-                       x=0.99, y=ATRIBUICAO / ALTURA_MAPA, xref="paper", yref="paper", xanchor="right", yanchor="bottom",
+                       x=0.99, y=ATRIBUICAO / altura, xref="paper", yref="paper", xanchor="right", yanchor="bottom",
                        showarrow=False, bgcolor="rgba(255,255,255,0.9)", borderpad=4,
                        font=dict(size=rotulos.FONTE, color=rotulos.COR_TEXTO))
     # o plotly põe os polígonos logo acima da última camada de água do mapa de fundo; no estilo com nomes
@@ -561,11 +569,12 @@ def figura_idade(dist, totais, nome_selecao):
                         showlegend=False)
     limite = max(5.0, max(sum(pct.values(), [])) * 1.25)
     marcas = marcas_ate_100(limite)
-    fig.update_layout(barmode="overlay", height=ALTURA_AO_LADO_DO_MAPA, margin=dict(l=0, r=0, t=TOPO_DISTRIBUICAO, b=0),
+    fig.update_layout(barmode="overlay", height=ALTURA_AO_LADO_DO_MAPA + TITULO_EIXO_IDADE,
+                      margin=dict(l=0, r=0, t=TOPO_DISTRIBUICAO, b=0),
                       showlegend=True, legend=dict(orientation="h", xref="container", yref="container", x=0, y=1, xanchor="left",
                                   yanchor="top", traceorder="reversed", font_size=rotulos.FONTE),
                       font=dict(size=rotulos.FONTE))
-    fig.update_xaxes(tickangle=0, tickfont_size=rotulos.FONTE)
+    fig.update_xaxes(tickangle=0, tickfont_size=rotulos.FONTE, title_text=rotulos.EIXO["eixo_idade"])
     # com as marcas dadas uma a uma, o plotly não põe o ticksuffix; o % vai no texto de cada marca
     fig.update_yaxes(title_text="% com idade informada", range=[0, limite], tickvals=marcas,
                      ticktext=["%d%%" % m for m in marcas])
@@ -1007,62 +1016,9 @@ def linha_do_contorno(bairro, mes_alvo, ano_das_linhas, nome_das_linhas):
 
 
 def linhas_do_caso(linha, rotulo_mes):
-    """Observado no mês-alvo e tamanho da janela do perfil, lidos da linha da base; os dois modos usam
-    esta função (na demonstração, a linha é da base sintética)."""
+    """Observado no mês-alvo e tamanho da janela do perfil, lidos da linha da base."""
     st.markdown("Observado em %s: %s." % (rotulo_mes, registros(int(linha["target_cvli"]))))
     st.markdown("Perfil do bairro calculado sobre %s dos 12 meses anteriores." % vitimas(int(linha["n_vitimas_hist12"])))
-
-
-@st.cache_resource
-def carregar_demonstracao():
-    t, phi, base, _ = demonstracao.modelo_e_contribuicoes()
-    return t, phi, base, demonstracao.ordem_global(t, phi), demonstracao.imagem_cascata(t, phi, base)
-
-
-def secao_demonstracao():
-    """As 4 visões de explicação com o modelo de demonstração: só dado sintético, nada da seleção real."""
-    t, phi, _, ordem, cascata = carregar_demonstracao()
-    alturas = ALTURAS["demonstracao"]
-    bairro_exemplo, mes_exemplo = demonstracao.BAIRRO_EXEMPLO, demonstracao.MES_EXEMPLO
-    st.subheader(demonstracao.TITULO_SECAO, anchor=False)
-    col_7c, col_7a = st.columns(2, gap="medium")
-    with col_7c, st.container(border=True):
-        st.markdown("##### Explicação local: %s, %s" % (bairro_exemplo, dados.mes_rotulo(mes_exemplo)))
-        st.markdown(demonstracao.identificacao_local(mes_exemplo))
-        # a cascata é uma figura do shap (matplotlib), mostrada na largura do cartão
-        with st.container(key="cascata"):
-            st.image(cascata, width="stretch")
-        linhas_do_caso(dados.linha_da_base(t, bairro_exemplo, mes_exemplo), dados.mes_rotulo(mes_exemplo))
-    with col_7a, st.container(border=True):
-        st.markdown("##### Resumo global, linhas do teste de 2024")
-        st.plotly_chart(demonstracao.figura_enxame(t, phi, ordem, alturas["enxame"]), key="enxame", config=SEM_BARRA)
-        st.markdown(linha_do_contorno(bairro_exemplo, mes_exemplo, demonstracao.ANO_EXPLICADO, "linhas de 2024"))
-
-    st.subheader("Como a contribuição varia", anchor=False)
-    col_7b, col_7d = st.columns(2, gap="medium")
-    with col_7b, st.container(border=True):
-        st.markdown("##### Dependência, linhas do teste de 2024")
-        abas = demonstracao.ABAS_DEPENDENCIA
-        for i, (aba, nome) in enumerate(zip(st.tabs(abas), abas)):
-            with aba:
-                st.plotly_chart(demonstracao.figura_dependencia(t, phi, nome, alturas["dependencia"]),
-                                key="dependencia_%d" % i, config=SEM_BARRA)
-                st.markdown(linha_do_contorno(bairro_exemplo, mes_exemplo, demonstracao.ANO_EXPLICADO, "linhas de 2024"))
-    with col_7d, st.container(border=True):
-        st.markdown("##### Mudança entre anos: 2019 e 2021 no treino, 2024 no teste")
-        st.plotly_chart(demonstracao.figura_anos(t, phi, ordem, alturas["anos"]), key="anos", config=SEM_BARRA)
-
-
-def secao_agregacao():
-    """Agregação espacial da demonstração: média de |contribuição| por região, em barras, e não no mapa,
-    porque os bairros fictícios não têm polígono. Fica fora de linhas_bc para não mudar as outras capturas."""
-    t, phi, _, ordem, _ = carregar_demonstracao()
-    st.subheader(demonstracao.TITULO_AGREGACAO, anchor=False)
-    with st.container(border=True):
-        st.markdown("##### " + demonstracao.CARTAO_AGREGACAO)
-        st.markdown(demonstracao.IDENTIFICACAO_LINHAS)
-        st.plotly_chart(demonstracao.figura_agregacao(t, phi, ordem, ALTURAS["demonstracao"]["agregacao"]),
-                        key="agregacao_regiao", config=SEM_BARRA)
 
 
 def contorno_na_dependencia(r, caso, atributo, bairro, mes_alvo):
@@ -1076,12 +1032,15 @@ def secao_modelo(r, bairro, mes_alvo, linha, rotulo_alvo):
     """A faixa de contexto do caso e as 4 visões de explicação com o modelo do corte fixo. Enxame, dependência e
     mapa usam as linhas de 2024; a chave abre os 30 atributos no enxame, na mudança entre anos e na cascata. A
     segunda chave põe o bairro num painel com eixo próprio no enxame e na mudança entre anos; a cascata soma até a
-    estimativa e fica igual."""
+    estimativa e fica igual. Abaixo das chaves, o glossário dos atributos, numa caixa fechada."""
     with st.container(key="explicacao_1"):
         with st.container(border=True, key="faixa"):
             st.markdown(faixa_de_contexto(bairro, mes_alvo, linha))
-        todos = st.toggle("ver os 30 atributos", key="ver_30")
-        proprio = st.toggle("bairro em escala própria", key="bairro_proprio")
+        todos = st.toggle("ver os 30 atributos", key="ver_30", help=rotulos.AJUDA_DA_CHAVE["chave_30"])
+        proprio = st.toggle("bairro em escala própria", key="bairro_proprio",
+                            help=rotulos.AJUDA_DA_CHAVE["chave_escala"])
+        with st.expander(rotulos.ROTULO["rotulo_glossario"], key="glossario"):
+            st.table(pd.DataFrame(rotulos.GLOSSARIO, columns=list(rotulos.COLUNAS_GLOSSARIO)), hide_index=True)
         separado = "bairro" if proprio else None
         ordem = modelo.ordem_global(r)
         mostrados = ordem if todos else ordem[:MOSTRADOS]
@@ -1092,11 +1051,18 @@ def secao_modelo(r, bairro, mes_alvo, linha, rotulo_alvo):
         col_7c, col_7a = st.columns(2, gap="medium")
         with col_7c, st.container(border=True, key="cartao_local"):
             st.markdown("##### Explicação local: %s, %s" % (bairro, rotulo_alvo))
+            # a estimativa é a da anotação da cascata, na grafia dela (1 casa, sem o zero do fim); o observado, o da
+            # faixa de contexto
+            esperado = visoes_shap.contagem_esperada(r.phi.loc[caso, r.atributos].to_numpy(dtype=float),
+                                                     float(r.linhas.loc[caso, "valor_base"]))
+            legenda_e_ajuda("cascata", {"mês": rotulo_alvo, "estimativa": visoes_shap.numero_br(esperado, 1),
+                                        "observado": dados.inteiro_br(int(linha["target_cvli"]))})
             with st.container(key="cascata", horizontal_alignment="center"):
                 st.image(cascata_do_caso(bairro, mes_alvo.year, mes_alvo.month, todos),
                          width=visoes_shap.LARGURA_CASCATA_TELA)
         with col_7a, st.container(border=True, key="cartao_global"):
             st.markdown("##### Resumo global, linhas do teste de 2024")
+            legenda_e_ajuda("enxame")
             st.plotly_chart(visoes_shap.figura_enxame(r.valores, r.phi, mostrados, linhas, caso, nome_caso,
                                                       alturas["enxame"], separado=separado), key="enxame",
                             config=SEM_BARRA)
@@ -1111,6 +1077,7 @@ def secao_modelo(r, bairro, mes_alvo, linha, rotulo_alvo):
         col_7b, col_7d = st.columns(2, gap="medium")
         with col_7b, st.container(border=True, key="cartao_dependencia"):
             st.markdown("##### Dependência, linhas do teste de 2024")
+            legenda_e_ajuda("dependencia")
             for i, (aba, nome) in enumerate(zip(st.tabs(list(ABAS_DEPENDENCIA)), ABAS_DEPENDENCIA)):
                 atributo = ATRIBUTO_DA_ABA[nome]
                 # nas proporções, as linhas de janela vazia (n_vitimas_hist12 = 0) ficam de fora
@@ -1118,11 +1085,12 @@ def secao_modelo(r, bairro, mes_alvo, linha, rotulo_alvo):
                 with aba:
                     st.plotly_chart(visoes_shap.figura_dependencia(r.valores, r.phi, atributo, desenhadas,
                                                                    r.linhas["risp"], REGIOES_RISP, caso, nome_caso,
-                                                                   alturas["dependencia"], "valor de " + atributo),
+                                                                   alturas["dependencia"], EIXO_DEPENDENCIA[nome]),
                                     key="dependencia_%d" % i, config=SEM_BARRA)
                     st.markdown(contorno_na_dependencia(r, caso, atributo, bairro, mes_alvo))
         with col_7d, st.container(border=True, key="cartao_anos"):
             st.markdown("##### Mudança entre anos: 2019 e 2021 no treino, 2024 no teste")
+            legenda_e_ajuda("anos")
             st.plotly_chart(visoes_shap.figura_anos(r.linhas["ano_alvo"], r.phi, mostrados, alturas["anos"],
                                                     separado=separado), key="anos", config=SEM_BARRA)
 
@@ -1250,7 +1218,7 @@ def figura_mensal(mensais, metrica):
 
 
 def tabela_valores(anuais):
-    """As 20 linhas de metricas.csv, corte fixo de 2024 e janela de 2022, 2023 e 2024, com os métodos na ordem."""
+    """As 20 linhas de validacao_metricas.csv, corte fixo de 2024 e janela de 2022, 2023 e 2024, com os métodos na ordem."""
     saida = []
     for forma, ano in [("corte_fixo", ANO_DO_TESTE)] + [("janela", a) for a in (2022, 2023, ANO_DO_TESTE)]:
         nomes = NOMES_CORTE_FIXO if forma == "corte_fixo" else NOMES_JANELA
@@ -1265,21 +1233,25 @@ def tabela_valores(anuais):
 
 
 def secao_diagnostico(r, metricas):
-    """As métricas do teste de 2024, lidas dos arquivos da Parte 2; o painel não calcula métrica nenhuma. Os cartões
-    têm só título: a rodada, as formas de validação e as métricas são explicadas no capítulo."""
+    """As métricas do teste de 2024, lidas de resultados/; o painel não calcula métrica nenhuma. Cada cartão
+    tem título, legenda e a caixa "Como ler"."""
     with st.container(border=True, key="cartao_corte_fixo"):
         st.markdown("##### Métricas por corte fixo")
+        legenda_e_ajuda("corte_fixo")
         st.plotly_chart(figura_corte_fixo(metricas.anuais), key="diagnostico_corte_fixo", config=SEM_BARRA)
     with st.container(border=True, key="cartao_janela"):
         st.markdown("##### Métricas por ano na janela expansiva")
+        legenda_e_ajuda("janela")
         st.plotly_chart(figura_janela(metricas.anuais), key="diagnostico_janela", config=SEM_BARRA)
     with st.container(border=True, key="cartao_mensal"):
         st.markdown("##### Métricas por meses na janela expansiva")
+        legenda_e_ajuda("mensal")
         metrica = st.segmented_control("Métrica", list(NOMES_METRICAS), format_func=NOMES_METRICAS.get,
                                        default="deviance", required=True, key="metrica_mensal")
         st.plotly_chart(figura_mensal(metricas.mensais, metrica), key="diagnostico_mensal", config=SEM_BARRA)
     with st.container(border=True, key="cartao_tabela"):
         st.markdown("##### Erro por forma de validação, ano e método")
+        legenda_e_ajuda("tabela")
         st.table(tabela_valores(metricas.anuais), hide_index=True)
 
 
@@ -1323,8 +1295,8 @@ if st.session_state.get("aba", ABAS[0]) == "Explicação":
         st.caption("com dados até " + dados.mes_rotulo(mes_t))
 
 rotulo_alvo = dados.mes_rotulo(mes_alvo)
-com_modelo = rodada is not None and not DEMONSTRACAO
-# os arquivos do teste de 2024 só valem no modo normal com o modelo; a demonstração não muda
+com_modelo = rodada is not None
+# os arquivos do teste de 2024 só valem com o modelo
 metricas = carregar_metricas() if com_modelo else None
 
 st.header("VEX-CVLI. Explicação da estimativa mensal de CVLI por bairro, Salvador", anchor=False)
@@ -1334,7 +1306,7 @@ if metricas is None:
 aba_exploracao, aba_explicacao, aba_diagnostico = st.tabs(list(ABAS), key="aba", on_change="rerun")
 
 with aba_exploracao, st.container(key="aba_exploracao"):
-    # 2 partes, para as capturas do capítulo: filtros, mapa com o turno e a idade ao lado, e as 3 distribuições da
+    # 2 partes, que as capturas recortam em separado: filtros, mapa com o turno e a idade ao lado, e as 3 distribuições da
     # linha de baixo; e a série
     parte_1, parte_2 = st.container(key="exploracao_1"), st.container(key="exploracao_2")
     # os filtros valem só para a exploração. Ficam em linha, sem expansor: com o cabeçalho e as margens dele, a
@@ -1358,6 +1330,8 @@ with aba_exploracao, st.container(key="aba_exploracao"):
         dias = st.pills("Dia da semana", list(dados.DIAS), format_func=dados.DIAS.get, selection_mode="multi",
                         default=list(dados.DIAS), key="dias")
     periodo = (mes_por_rotulo[ini], mes_por_rotulo[fim])
+    # os meses do controle "Período", como ele os mostra, nas legendas das distribuições e do mapa
+    no_periodo = {"inicio": ini, "fim": fim}
     todos_os_turnos = dados.filtrar(eventos, periodo, naturezas, None, dias)
     filtrado = todos_os_turnos[todos_os_turnos["turno"].isin(turnos)]
     contagem = dados.contagem_por_bairro(filtrado, bairros)
@@ -1377,85 +1351,89 @@ with aba_exploracao, st.container(key="aba_exploracao"):
                                              on_change=manter_escolha, args=("agregacao", "bairro"))
         tabela_m = (dados.tabela_aisp(contagem, aisp_de) if agregacao == "aisp"
                     else dados.tabela_mapa(contagem, risp_de, agregacao))
+        legenda_e_ajuda("mapa_observado", {"nível": ROTULO_AGREGACAO[agregacao], **no_periodo})
         st.plotly_chart(figura_mapa(tabela_m, "observado", agregacao, selecao, geo, quadro, nomes_sem_bairro,
-                                    geo_aisp=geo_aisp),
+                                    geo_aisp=geo_aisp, altura=ALTURA_MAPA_EXPLORACAO),
                         key=chave_do_mapa(), on_select="rerun", selection_mode="points", config=SEM_BARRA)
     with col_direita:
         with st.container(border=True, key="cartao_turno"):
             st.markdown("##### Distribuição por turno")
+            legenda_e_ajuda("turno", no_periodo)
             dist, totais = dados.distribuicao_turno(todos_os_turnos, selecao)
             st.plotly_chart(figura_turno(dist, totais, nome_selecao, turnos), key="turno", config=SEM_BARRA)
         with st.container(border=True, key="cartao_idade"):
             st.markdown("##### Distribuição por idade da vítima")
+            legenda_e_ajuda("idade", no_periodo)
             dist_i, totais_i = dados.distribuicao_idade(filtrado, selecao)
             st.plotly_chart(figura_idade(dist_i, totais_i, nome_selecao), key="distribuicao_idade", config=SEM_BARRA)
     col_natureza, col_sexo, col_risp = parte_1.columns([1.2, 1.1, 1], gap="medium")
     with col_natureza, st.container(border=True, key="cartao_natureza"):
         st.markdown("##### Distribuição por natureza")
+        legenda_e_ajuda("natureza", no_periodo)
         dist_n, totais_n = dados.distribuicao_natureza(dados.filtrar(eventos, periodo, None, turnos, dias), selecao)
         st.plotly_chart(figura_natureza(dist_n, totais_n, nome_selecao, naturezas), key="distribuicao_natureza",
                         config=SEM_BARRA)
     with col_sexo, st.container(border=True, key="cartao_sexo"):
         st.markdown("##### Distribuição por gênero")
+        legenda_e_ajuda("genero", no_periodo)
         dist_s, totais_s = dados.distribuicao_sexo(filtrado, selecao)
         st.plotly_chart(figura_sexo(dist_s, totais_s, nome_selecao), key="distribuicao_sexo", config=SEM_BARRA)
     with col_risp, st.container(border=True, key="cartao_risp"):
         st.markdown("##### Distribuição por RISP")
+        legenda_e_ajuda("risp", no_periodo)
         dist_r, _ = dados.distribuicao_risp(filtrado, risp_de, rotulos.ORDEM_RISP)
         st.plotly_chart(figura_risp(dist_r, {risp_de[b] for b in selecao}, nome_selecao), key="distribuicao_risp",
                         config=SEM_BARRA)
     with parte_2, st.container(border=True, key="cartao_serie"):
         st.markdown("##### Série mensal " + ("de Salvador" if not selecao else "de " + selecao[0] if len(selecao) == 1
                                              else "da " + nome_selecao))
+        legenda_e_ajuda("serie")
         st.plotly_chart(figura_serie(dados.serie_mensal(filtrado, selecao, periodo), periodo, None),
                         key="serie", config=SEM_BARRA)
 
 with aba_explicacao:
-    if DEMONSTRACAO:
-        with st.container(key="linhas_bc"):
-            secao_demonstracao()
-        with st.container(key="linha_d"):
-            secao_agregacao()
+    if rodada is not None:
+        secao_modelo(rodada, bairro, mes_alvo, linha, rotulo_alvo)
     else:
-        if rodada is not None:
-            secao_modelo(rodada, bairro, mes_alvo, linha, rotulo_alvo)
-        else:
-            with st.container(key="linhas_bc"):
-                secao_reservada(bairro, mes_alvo, linha, rotulo_alvo)
-        with st.container(key="explicacao_3"):
-            with st.container(border=True, key="cartao_mapa_contribuicao"):
-                c_titulo, c_atributo, c_agregacao = st.columns([1.3, 1.5, 1], vertical_alignment="bottom")
-                with c_titulo:
-                    st.markdown("##### Mapa da contribuição")
-                with c_agregacao:
-                    agregacao_c = st.segmented_control("Agregação", list(ROTULO_AGREGACAO),
-                                                       format_func=ROTULO_AGREGACAO.get, key="agregacao_contribuicao",
-                                                       on_change=manter_escolha,
-                                                       args=("agregacao_contribuicao", "bairro"))
-                # na AISP, com o modelo, os polígonos são os das 16 AISP; sem o modelo, o mapa reservado é o dos bairros
-                if agregacao_c == "aisp" and rodada is not None:
-                    tabela_c = dados.tabela_aisp(contagem, aisp_de)
-                else:
-                    tabela_c = dados.tabela_mapa(contagem, risp_de, "bairro" if agregacao_c == "aisp" else agregacao_c)
-                atributo_mapa = None
-                with c_atributo:
-                    if rodada is not None:
-                        atributo = st.selectbox("Atributo", [modelo.TOTAL] + rodada.atributos,
-                                                format_func=rotulo_atributo, key="atributo")
-                        atributo_mapa = rotulo_atributo(atributo)
-                    else:
-                        st.selectbox("Atributo", [ROTULO_TOTAL] + atributos, disabled=True, key="atributo")
+        with st.container(key="linhas_bc"):
+            secao_reservada(bairro, mes_alvo, linha, rotulo_alvo)
+    with st.container(key="explicacao_3"):
+        with st.container(border=True, key="cartao_mapa_contribuicao"):
+            c_titulo, c_atributo, c_agregacao = st.columns([1.3, 1.5, 1], vertical_alignment="bottom")
+            with c_titulo:
+                st.markdown("##### Mapa da contribuição")
+            with c_agregacao:
+                agregacao_c = st.segmented_control("Agregação", list(ROTULO_AGREGACAO),
+                                                   format_func=ROTULO_AGREGACAO.get, key="agregacao_contribuicao",
+                                                   on_change=manter_escolha,
+                                                   args=("agregacao_contribuicao", "bairro"))
+            # na AISP, com o modelo, os polígonos são os das 16 AISP; sem o modelo, o mapa reservado é o dos bairros
+            if agregacao_c == "aisp" and rodada is not None:
+                tabela_c = dados.tabela_aisp(contagem, aisp_de)
+            else:
+                tabela_c = dados.tabela_mapa(contagem, risp_de, "bairro" if agregacao_c == "aisp" else agregacao_c)
+            atributo_mapa = None
+            with c_atributo:
                 if rodada is not None:
-                    # os filtros da exploração não valem aqui: a média vem do modelo, nas linhas de 2024
-                    media = modelo.media_abs(rodada, atributo, agregacao_c)
-                    # a coluna da tabela tem o nome da agregação (bairro, aisp ou risp)
-                    tabela_c = tabela_c.assign(valor=tabela_c[agregacao_c].map(media))
-                st.plotly_chart(figura_mapa(tabela_c, "contribuição", agregacao_c, [bairro], geo, quadro,
-                                            nomes_sem_bairro, atributo_mapa, geo_aisp=geo_aisp),
-                                key=chave_do_mapa("mapa_contribuicao"), on_select="rerun", selection_mode="points",
-                                config=SEM_BARRA)
-            # a aba termina no mapa da contribuição: o cartão da série com a estimativa saiu (pedido do orientador
-            # em 21/10); a figura_serie e a dados.serie_mensal continuam, porque a exploração as usa
+                    atributo = st.selectbox("Atributo", [modelo.TOTAL] + rodada.atributos,
+                                            format_func=rotulo_atributo, key="atributo")
+                    atributo_mapa = rotulo_atributo(atributo)
+                else:
+                    st.selectbox("Atributo", [ROTULO_TOTAL] + atributos, disabled=True, key="atributo")
+            if rodada is not None:
+                # os filtros da exploração não valem aqui: a média vem do modelo, nas linhas de 2024
+                media = modelo.media_abs(rodada, atributo, agregacao_c)
+                # a coluna da tabela tem o nome da agregação (bairro, aisp ou risp)
+                tabela_c = tabela_c.assign(valor=tabela_c[agregacao_c].map(media))
+                # a legenda e a ajuda falam da contribuição do modelo: sem ele, com o mapa reservado, o cartão
+                # fica só com o título e os controles
+                legenda_e_ajuda("mapa_contribuicao")
+            st.plotly_chart(figura_mapa(tabela_c, "contribuição", agregacao_c, [bairro], geo, quadro,
+                                        nomes_sem_bairro, atributo_mapa, geo_aisp=geo_aisp),
+                            key=chave_do_mapa("mapa_contribuicao"), on_select="rerun", selection_mode="points",
+                            config=SEM_BARRA)
+        # a aba termina no mapa da contribuição: o cartão da série com a estimativa saiu; a figura_serie e a
+        # dados.serie_mensal continuam, porque a exploração as usa
 
 with aba_diagnostico, st.container(key="aba_diagnostico"):
     if metricas is not None:

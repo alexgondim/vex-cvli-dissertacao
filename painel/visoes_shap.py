@@ -1,7 +1,7 @@
-"""Desenho das 4 visões de explicação (cascata, enxame, dependência e mudança entre anos), comum ao modo normal e
-ao de demonstração. Não lê dado nenhum: recebe os valores, as contribuições e o caso de quem chama.
+"""Desenho das 4 visões de explicação: cascata, enxame, dependência e mudança entre anos.
 
-A cascata segue o waterfall do projeto anterior: shap.plots.waterfall, com o mesmo par de cores.
+Recebe os valores, as contribuições e o caso de quem chama. A cascata segue o `shap.plots.waterfall`, com o mesmo par
+de cores. Não lê nem grava arquivo. O `app.py` o importa.
 """
 import io
 import re
@@ -186,9 +186,15 @@ def _prende_na_figura(fig, textos, margem=0.02):
             txt.set_x(txt.get_position()[0] + desvio)
 
 
+def contagem_esperada(valores, base):
+    """Registros esperados do caso: exp do valor de base mais a soma das contribuições, que estão no log da contagem
+    esperada. É o número da anotação da cascata e o da linha do mês estimado, no cartão dela."""
+    return float(np.exp(base + np.asarray(valores, dtype=float).sum()))
+
+
 def imagem_cascata(valores, base, linha, nomes, tamanho, max_display=None, tarja=None, dpi=200, n_vitimas=None):
-    """PNG da cascata do caso, no estilo do waterfall do projeto anterior: "valor = atributo" em cada linha,
-    valor de base e estimativa com os nomes do capítulo, a estimativa também em registros esperados, a
+    """PNG da cascata do caso, no estilo do shap.plots.waterfall: "valor = atributo" em cada linha,
+    valor de base e estimativa com os nomes usados no painel, a estimativa também em registros esperados, a
     legenda das cores e, se houver, a tarja. Com max_display menor que o número de atributos, os de menor
     contribuição em valor absoluto somam numa barra só, "demais N atributos". `n_vitimas` é o
     n_vitimas_hist12 do caso, que decide o texto do valor ausente."""
@@ -204,7 +210,7 @@ def imagem_cascata(valores, base, linha, nomes, tamanho, max_display=None, tarja
     fig = plt.gcf()
     ax = fig.axes[0]
     for eixo in fig.axes[1:]:
-        eixo.set_xticks([])  # saem o E[f(X)] e o f(x) do shap; entram os nomes do capítulo
+        eixo.set_xticks([])  # saem o E[f(X)] e o f(x) do shap; entram os nomes usados no painel
     rotulos_y = ax.get_yticklabels()
     if any(re.fullmatch(r"\d+ other features", t.get_text()) for t in rotulos_y):
         ax.set_yticks(ax.get_yticks(), [re.sub(r"^(\d+) other features$", r"demais \1 atributos", t.get_text())
@@ -215,7 +221,8 @@ def imagem_cascata(valores, base, linha, nomes, tamanho, max_display=None, tarja
     fx = base + valores.sum()
     anota = dict(xycoords=("data", "axes fraction"), textcoords="offset points", fontsize=12, color=TEXTO,
                  annotation_clip=False)
-    estimativa = ax.annotate("estimativa = %s (%s registros esperados)" % (numero_br(fx), numero_br(np.exp(fx), 1)),
+    estimativa = ax.annotate("estimativa = %s (%s registros esperados)"
+                             % (numero_br(fx), numero_br(contagem_esperada(valores, base), 1)),
                              xy=(fx, 1), xytext=(0, 5), ha="right" if fx > sum(ax.get_xlim()) / 2 else "left",
                              va="bottom", **anota)
     valor_de_base = ax.annotate("valor de base = %s" % numero_br(base), xy=(base, 0), xytext=(0, -22),
@@ -293,7 +300,7 @@ def _faixa_com_zero(valores, folga=0.05):
 def _dois_paineis(altura, margem_baixo, n):
     """Figura de 2 painéis, um sobre o outro, cada um com o seu eixo x. O de cima tem a altura de 1 dos n atributos
     da figura de painel único, mais ESPACO_MARCAS para as marcas do eixo dele; o de baixo fica com o resto. A
-    escala própria não existe na demonstração: a margem de cima é a de layout_visao sem tarja, 10 px."""
+    margem de cima é a de layout_visao sem tarja, 10 px."""
     area = altura - 10 - margem_baixo
     linha = area / n
     return make_subplots(rows=2, cols=1, row_heights=[linha, area - linha - ESPACO_MARCAS],

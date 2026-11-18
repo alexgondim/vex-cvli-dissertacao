@@ -1,12 +1,14 @@
-"""Saídas da rodada do modelo para o modo normal do painel.
+"""Saídas do modelo que o painel lê, todas em `resultados/`.
 
-Lê só painel_mensal/dados_modelo/, que o exportar_painel.py da rodada de 07/10 grava: as contribuições do modelo
-do corte fixo nas 11.952 linhas da base bairro-mês e a identificação da rodada. O painel não treina nada. Sem a
-pasta, carregar() devolve None, e as visões de explicação continuam reservadas.
+`carregar()` lê `explicacoes.csv` e `explicacoes_info.json`, que o `modelo/exportar_para_painel.py` grava. O primeiro
+traz as contribuições nas 11.952 linhas da base por bairro e mês. O segundo traz a configuração, a lista dos atributos
+e a escala. Sem `explicacoes.csv`, `carregar()` devolve None, e as visões de explicação ficam reservadas.
 
-As métricas do teste de 2024 (metricas.csv, metricas_mensais.csv e teste.json) são gravadas ali pelo
-exportar_metricas.py da Parte 2; carregar_metricas() as lê e devolve None se faltar algum dos 3. O painel não
-calcula métrica nenhuma.
+`carregar_metricas()` lê `validacao_metricas.csv` e `validacao_metricas_mensais.csv`, as métricas do teste de 2024. O
+`experimentos/validacao_juntar_metricas.py` e o `experimentos/validacao_janela_expansiva.py` gravam esses 2 arquivos
+no modo `teste`. Se faltar um dos 2, `carregar_metricas()` devolve None.
+
+O módulo não treina modelo, não calcula métrica e não grava arquivo. O `app.py` o importa com o nome `modelo`.
 """
 import json
 from dataclasses import dataclass
@@ -14,7 +16,7 @@ from pathlib import Path
 
 import pandas as pd
 
-PASTA = Path(__file__).resolve().parent / "dados_modelo"
+PASTA = Path(__file__).resolve().parents[1] / "resultados"
 CATEGORICAS = ("bairro", "aisp", "risp")
 ANO_EXPLICADO = 2024  # o enxame, a dependência e o mapa usam as linhas do teste do corte fixo
 TOTAL = "total"
@@ -36,7 +38,7 @@ def carregar():
     if not (PASTA / "explicacoes.csv").exists():
         return None
     e = pd.read_csv(PASTA / "explicacoes.csv")
-    info = json.loads((PASTA / "rodada.json").read_text(encoding="utf-8"))
+    info = json.loads((PASTA / "explicacoes_info.json").read_text(encoding="utf-8"))
     nomes = info["atributos"]
     valores = e[["valor_" + a for a in nomes]].set_axis(nomes, axis=1)
     for a in CATEGORICAS:
@@ -50,15 +52,13 @@ def carregar():
 class Metricas:
     anuais: pd.DataFrame     # forma, ano, metodo, linhas, mae, rmse, deviance (20 linhas)
     mensais: pd.DataFrame    # ano, mes, metodo, linhas, mae, rmse, deviance (36 meses e 5 métodos)
-    teste: dict              # data e hora e sha256 do CONGELADO_parte2.tsv; convergência da binomial negativa
 
 
 def carregar_metricas():
-    arquivos = [PASTA / n for n in ("metricas.csv", "metricas_mensais.csv", "teste.json")]
+    arquivos = [PASTA / n for n in ("validacao_metricas.csv", "validacao_metricas_mensais.csv")]
     if not all(a.exists() for a in arquivos):
         return None
-    return Metricas(pd.read_csv(arquivos[0]), pd.read_csv(arquivos[1]),
-                    json.loads(arquivos[2].read_text(encoding="utf-8")))
+    return Metricas(pd.read_csv(arquivos[0]), pd.read_csv(arquivos[1]))
 
 
 def indice(r, bairro, periodo):

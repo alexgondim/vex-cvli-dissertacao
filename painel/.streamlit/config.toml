@@ -1,4 +1,4 @@
-# Vale para o mock sempre que ele roda com streamlit run painel_mensal/app.py, sem depender de
+# Vale para o painel sempre que ele roda com streamlit run painel/app.py, sem depender de
 # flag na linha de comando: a base tem dados de vítimas, então o servidor fica só em localhost e
 # não envia estatísticas de uso.
 [server]

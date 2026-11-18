@@ -1,7 +1,9 @@
-"""Leitura da base de 27/09 e contagens do mock do painel mensal.
+"""Leitura dos registros, da base por bairro e mês e da malha de bairros, e contagens que o painel mostra.
 
-Só dado real, sem modelo. Nada aqui depende do Streamlit, para que as conferências usem as
-mesmas contagens que a tela mostra.
+Lê `dados/processados/eventos.csv`, `dados/processados/painel_bairro_mes_features.csv` e
+`dados/processados/dicionario_painel_features.csv`, que o `preprocessamento/gerar_base_bairro_mes.py` grava. Lê
+também a malha `dados/geograficos/bairros_salvador.geojson`. Usa só os registros, sem modelo. Não depende do
+Streamlit. Não grava arquivo.
 """
 import json
 import math
@@ -13,12 +15,12 @@ from shapely.geometry import mapping, shape
 from shapely.ops import unary_union
 
 RAIZ = Path(__file__).resolve().parents[1]
-PASTA_BASE = RAIZ / "analises" / "medicoes_2026-09" / "base_2018_2024"
+PASTA_BASE = RAIZ / "dados" / "processados"
 ARQUIVOS = {
     "eventos": PASTA_BASE / "eventos.csv",
     "base_bairro_mes": PASTA_BASE / "painel_bairro_mes_features.csv",
     "dicionario": PASTA_BASE / "dicionario_painel_features.csv",
-    "geojson": RAIZ / "data" / "processed" / "bairros_salvador.geojson",
+    "geojson": RAIZ / "dados" / "geograficos" / "bairros_salvador.geojson",
 }
 # da base bairro-mês, só o que alguma visão exibe; a aisp é a do mapa da exploração na agregação por AISP
 COLUNAS_BASE = ["bairro", "risp", "aisp", "ano_ref", "mes_ref", "ano_alvo", "mes_alvo", "n_vitimas_hist12",
@@ -63,7 +65,7 @@ DIAS = {"domingo": "dom", "segunda": "seg", "terca": "ter", "quarta": "qua", "qu
         "sabado": "sáb"}
 MESES = pd.period_range("2018-01", "2024-12", freq="M")
 MESES_ALVO = pd.period_range("2019-01", "2024-12", freq="M")
-# caso aberto ao iniciar: o item 7 pede a explicação local num mês de pico; jun/2024 tem 4 CVLI em
+# caso aberto ao iniciar: a explicação local de um bairro num mês de pico; jun/2024 tem 4 CVLI em
 # Itapuã, o máximo do bairro no ano (empatado com fev/2024)
 BAIRRO_INICIAL = "Itapuã"
 MES_INICIAL = pd.Period("2024-06", freq="M")
@@ -179,7 +181,7 @@ def risp_por_bairro(base):
 
 
 def aisp_por_bairro(base):
-    """AISP de cada bairro, a da base de 27/09 (Portaria SSP 435/2020, Anexo I), uma por bairro."""
+    """AISP de cada bairro, a da base por bairro e mês (Portaria SSP 435/2020, Anexo I), uma por bairro."""
     assert (base.groupby("bairro")["aisp"].nunique() == 1).all()
     return base.groupby("bairro")["aisp"].first().astype(int)
 
