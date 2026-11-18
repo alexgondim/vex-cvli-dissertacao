@@ -1,14 +1,18 @@
-"""Forma (i), corte fixo. O modelo é o do corte fixo de 07/10, sem reajuste, com as estimativas gravadas em
-contribuicoes_corte_fixo.csv; a binomial negativa é ajustada nas 7.968 linhas de alvo de 2019 a 2022; as
-referências ingênuas usam só o histórico de cada bairro. Tudo avaliado nas 1.992 linhas do ano (2023 no ensaio,
-2024 no teste).
+"""Validação no corte fixo: o modelo treinado com os alvos de 2019 a 2022, sem reajuste, ao lado das quatro
+referências de comparação (binomial negativa, persistência, média móvel de 12 meses e média sazonal).
 
-Grava metricas_corte_fixo.csv, previsoes_corte_fixo.csv e nb_corte_fixo.json.
+Lê `resultados/contribuicoes_corte_fixo.csv` (as estimativas do modelo) e a base por bairro e mês. Ajusta a binomial
+negativa nas 7.968 linhas de alvo de 2019 a 2022. A persistência, a média móvel de 12 meses e a média sazonal usam
+só o histórico de cada bairro. Avalia nas 1.992 linhas do ano: 2023 no modo `ensaio`, 2024 no modo `teste`.
+
+Grava `validacao_metricas_corte_fixo.csv`, `validacao_previsoes_corte_fixo.csv` e `validacao_nb_corte_fixo.json`.
+
+Da raiz do repositório: python experimentos/validacao_corte_fixo.py teste
 """
 import numpy as np
 import pandas as pd
 
-import comum2 as c
+import validacao_comum as c
 
 m = c.modo()
 ano = c.ANO[m]
@@ -45,8 +49,8 @@ y = linhas[c.ALVO].to_numpy(float)
 metricas = pd.DataFrame([c.linha_de_metricas(y, previsoes[k], forma="corte_fixo", ano=ano, metodo=k) for k in c.METODOS])
 tabela = pd.concat([linhas[chave].assign(forma="corte_fixo", metodo=k, alvo=y, previsao=previsoes[k])
                     for k in c.METODOS], ignore_index=True)
-c.gravar_csv(metricas, saida / "metricas_corte_fixo.csv")
-c.gravar_csv(tabela, saida / "previsoes_corte_fixo.csv")
-c.gravar_json(c.resumo_nb(nb, "corte fixo"), saida / "nb_corte_fixo.json")
-c.registrar("%s, corte fixo: fim; gravados metricas_corte_fixo.csv, previsoes_corte_fixo.csv e nb_corte_fixo.json"
-            % m)
+c.gravar_csv(metricas, saida / "validacao_metricas_corte_fixo.csv")
+c.gravar_csv(tabela, saida / "validacao_previsoes_corte_fixo.csv")
+c.gravar_json(c.resumo_nb(nb, "corte fixo"), saida / "validacao_nb_corte_fixo.json")
+c.registrar("%s, corte fixo: fim; gravados validacao_metricas_corte_fixo.csv, validacao_previsoes_corte_fixo.csv e "
+            "validacao_nb_corte_fixo.json" % m)

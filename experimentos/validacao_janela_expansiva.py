@@ -1,14 +1,20 @@
-"""Forma (ii), janela expansiva: um reajuste por mês, de jan/2022 ao fim da janela (dez/2023 no ensaio, dez/2024
-no teste). Em cada mês, o modelo (configuração 3, os 30 atributos) e a binomial negativa são treinados com todas as
-linhas de alvo anterior ao mês e preveem as 166 linhas do mês; as referências ingênuas, nos mesmos meses.
+"""Validação na janela expansiva: um reajuste por mês, de jan/2022 ao fim da janela (dez/2023 no modo `ensaio`,
+dez/2024 no modo `teste`).
 
-Grava metricas_mensais.csv (uma linha por mês e método), metricas_janela.csv (por ano), previsoes_janela.csv e
-nb_janela.json.
+Em cada mês, o modelo (a configuração de `resultados/escolha.json`, os 30 atributos) e a binomial negativa são
+treinados com todas as linhas de alvo anterior ao mês e preveem as 166 linhas do mês; as outras três referências de
+comparação (persistência, média móvel de 12 meses e média sazonal) entram nos mesmos meses. Lê a base por bairro e
+mês.
+
+Grava `validacao_metricas_mensais.csv` (uma linha por mês e método), `validacao_metricas_janela.csv` (por ano),
+`validacao_previsoes_janela.csv` e `validacao_nb_janela.json`.
+
+Da raiz do repositório: python experimentos/validacao_janela_expansiva.py teste
 """
 import numpy as np
 import pandas as pd
 
-import comum2 as c
+import validacao_comum as c
 
 m = c.modo()
 saida = c.pasta_de_saida(m)
@@ -47,10 +53,10 @@ tabela = pd.concat(partes, ignore_index=True)
 anuais = [c.linha_de_metricas(g["alvo"].to_numpy(float), g["previsao"].to_numpy(float), forma="janela", ano=a, metodo=k)
           for a in sorted(set(meses.year)) for k in c.METODOS
           for g in [tabela[(tabela["ano_alvo"] == a) & (tabela["metodo"] == k)]]]
-c.gravar_csv(pd.DataFrame(mensais), saida / "metricas_mensais.csv")
-c.gravar_csv(pd.DataFrame(anuais), saida / "metricas_janela.csv")
-c.gravar_csv(tabela, saida / "previsoes_janela.csv")
-c.gravar_json(ajustes, saida / "nb_janela.json")
-c.registrar("%s, janela: fim; binomial negativa convergiu em %d de %d ajustes; gravados metricas_mensais.csv, "
-            "metricas_janela.csv, previsoes_janela.csv e nb_janela.json"
+c.gravar_csv(pd.DataFrame(mensais), saida / "validacao_metricas_mensais.csv")
+c.gravar_csv(pd.DataFrame(anuais), saida / "validacao_metricas_janela.csv")
+c.gravar_csv(tabela, saida / "validacao_previsoes_janela.csv")
+c.gravar_json(ajustes, saida / "validacao_nb_janela.json")
+c.registrar("%s, janela: fim; binomial negativa convergiu em %d de %d ajustes; gravados validacao_metricas_mensais.csv, "
+            "validacao_metricas_janela.csv, validacao_previsoes_janela.csv e validacao_nb_janela.json"
             % (m, sum(a["convergiu"] for a in ajustes), len(ajustes)))

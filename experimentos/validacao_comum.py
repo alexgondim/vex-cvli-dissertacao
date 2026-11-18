@@ -1,12 +1,14 @@
-"""Partes comuns da Parte 2 da rodada de 07/10 (bloco 30): modo de execução (ensaio ou teste), leitura da base,
-referências ingênuas, binomial negativa NB2, métricas, gravação e registro no log da Parte 2.
+"""Partes comuns dos experimentos: modo de execução (ensaio ou teste), leitura da base, as quatro
+referências de comparação (persistência, média móvel de 12 meses, média sazonal e binomial negativa NB2), métricas e
+gravação.
 
-Usa o comum.py da pasta de cima só para ler (base, atributos, estimador, métricas) e não grava nada nela: o log,
-os programas e as saídas ficam em parte2/. Da raiz do repositório, sem bytecode:
-PYTHONUTF8=1 PYTHONDONTWRITEBYTECODE=1 ./venv/Scripts/python.exe analises/medicoes_2026-09/rodada_2026-10-07/parte2/<programa>.py ensaio|teste
+Importa `modelo/comum.py` (base, atributos, estimador, métricas) e lê `resultados/escolha.json` (a configuração do
+modelo). Os programas que o importam gravam em `resultados/`, no modo `teste`, e em `resultados/ensaio/`, no modo
+`ensaio`.
 
-No ensaio, as linhas de alvo em 2024 saem da base logo depois da leitura, e o ano avaliado é 2023; no teste, o ano
-é 2024, e o programa só roda com o CONGELADO_parte2.tsv gravado e conferido.
+No modo `ensaio`, as linhas de alvo em 2024 saem da base logo depois da leitura, e o ano avaliado é 2023; no modo
+`teste`, o ano avaliado é 2024. Os programas rodam da raiz do repositório, por exemplo:
+python experimentos/validacao_corte_fixo.py teste
 """
 import datetime
 import hashlib
@@ -19,17 +21,15 @@ import pandas as pd
 from scipy.optimize import minimize
 from scipy.special import digamma, gammaln
 
-PARTE2 = Path(__file__).resolve().parent
-RODADA = PARTE2.parent
-sys.path.insert(0, str(RODADA))
+RAIZ = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(RAIZ / "modelo"))
 import comum  # noqa: E402
 
-LOG = PARTE2 / "rodada_parte2.log"
-PROTOCOLO = PARTE2 / "protocolo_parte2.md"
-CONGELADO = PARTE2 / "CONGELADO_parte2.tsv"
-PASTA_ENSAIO = PARTE2 / "ensaio"
-CONFIG = json.loads((RODADA / "escolha.json").read_text(encoding="utf-8"))["configuracao"]
-ESTIMATIVAS = RODADA / "contribuicoes_corte_fixo.csv"
+# as saídas de modelo/ e de experimentos/ ficam todas em resultados/
+RESULTADOS = comum.PASTA
+PASTA_ENSAIO = RESULTADOS / "ensaio"
+CONFIG = json.loads((RESULTADOS / "escolha.json").read_text(encoding="utf-8"))["configuracao"]
+ESTIMATIVAS = RESULTADOS / "contribuicoes_corte_fixo.csv"
 ALVO = comum.ALVO
 METODOS = ("modelo", "binomial_negativa", "persistencia", "media_movel_12", "media_sazonal")
 ANO = {"ensaio": 2023, "teste": 2024}
@@ -50,8 +50,6 @@ def agora():
 
 def registrar(texto):
     linha = "%s  %s" % (agora(), texto)
-    with open(LOG, "a", encoding="utf-8") as f:
-        f.write(linha + "\n")
     print(linha, flush=True)
 
 
@@ -60,40 +58,31 @@ def sha256(caminho):
 
 
 def modo():
-    """ensaio ou teste, da linha de comando. O ensaio só roda antes do congelamento; o teste, só depois dele, e com
-    os programas e o protocolo iguais aos congelados."""
+    """ensaio ou teste, da linha de comando."""
     assert len(sys.argv) == 2 and sys.argv[1] in ANO, "uso: programa.py ensaio|teste"
     m = sys.argv[1]
-    if m == "ensaio":
-        assert PROTOCOLO.exists(), "o protocolo vem antes do ensaio"
-        assert not CONGELADO.exists(), "o ensaio é anterior ao congelamento"
-    else:
-        assert CONGELADO.exists(), "o teste só roda depois do congelamento"
-        congelado = pd.read_csv(CONGELADO, sep="\t")
-        for _, l in congelado.iterrows():
-            assert sha256(PARTE2 / l["arquivo"]) == l["sha256"], "%s mudou depois do congelamento" % l["arquivo"]
     return m
 
 
 def pasta_de_saida(m):
-    pasta = PARTE2 if m == "teste" else PASTA_ENSAIO
+    pasta = RESULTADOS if m == "teste" else PASTA_ENSAIO
     pasta.mkdir(exist_ok=True)
     return pasta
 
 
 def gravar_csv(tabela, caminho):
-    """Grava sem sobrescrever."""
-    with open(caminho, "x", encoding="utf-8", newline="") as f:
+    """Grava, sobrescrevendo o que houver."""
+    with open(caminho, "w", encoding="utf-8", newline="") as f:
         tabela.to_csv(f, index=False)
 
 
 def gravar_json(dado, caminho):
-    with open(caminho, "x", encoding="utf-8") as f:
+    with open(caminho, "w", encoding="utf-8") as f:
         json.dump(dado, f, ensure_ascii=False, indent=1)
 
 
 def ler_base(m):
-    """Base de 27/09 (conferida pelo sha256 no comum.py). No ensaio, sem as linhas de alvo em 2024."""
+    """Base por bairro e mês. No ensaio, sem as linhas de alvo em 2024."""
     b = comum.ler_base()
     if m == "ensaio":
         b = b[b["ano_alvo"] <= 2023].copy()

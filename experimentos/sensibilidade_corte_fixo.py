@@ -1,12 +1,18 @@
-"""Forma (iii), ablação (M1 a M4) e sensibilidade territorial (MA, MB e MC) no corte fixo: cada variante treinada
-nas 7.968 linhas de alvo de 2019 a 2022, com a configuração 3, e avaliada nas 1.992 linhas do ano (2023 no ensaio,
-2024 no teste). Só as 3 métricas, sem contribuições.
+"""Variantes de atributos no corte fixo: M1 a M4 (blocos criminal, temporal, espacial e perfil, somados nessa
+ordem) e as variantes territoriais MA (só bairro), MB (só risp) e MC (bairro e risp), sempre com os outros 27
+atributos.
 
-Grava ablacao_sensibilidade_<ano>.csv e previsoes_ablacao_sensibilidade_<ano>.csv.
+Cada variante é treinada nas 7.968 linhas de alvo de 2019 a 2022, com a configuração de `resultados/escolha.json`, e
+avaliada nas 1.992 linhas do ano: 2023 no modo `ensaio`, 2024 no modo `teste`. Só as 3 métricas, sem contribuições.
+Lê a base por bairro e mês.
+
+Grava `sensibilidade_corte_fixo_<ano>.csv` e `previsoes_ablacao_sensibilidade_<ano>.csv`.
+
+Da raiz do repositório: python experimentos/sensibilidade_corte_fixo.py teste
 """
 import pandas as pd
 
-import comum2 as c
+import validacao_comum as c
 
 B = c.comum.BLOCOS
 NAO_ESPACIAIS = B["criminal"] + B["temporal"] + B["perfil"]
@@ -35,7 +41,7 @@ for variante, atributos in VARIANTES.items():
     metricas.append({"variante": variante, "atributos": len(nomes),
                      **c.linha_de_metricas(y, q, forma="corte_fixo", ano=ano)})
     partes.append(linhas.assign(variante=variante, alvo=y, previsao=q))
-c.gravar_csv(pd.DataFrame(metricas), saida / ("ablacao_sensibilidade_%d.csv" % ano))
+c.gravar_csv(pd.DataFrame(metricas), saida / ("sensibilidade_corte_fixo_%d.csv" % ano))
 c.gravar_csv(pd.concat(partes, ignore_index=True), saida / ("previsoes_ablacao_sensibilidade_%d.csv" % ano))
-c.registrar("%s, ablação e sensibilidade: fim; gravados ablacao_sensibilidade_%d.csv e "
+c.registrar("%s, ablação e sensibilidade: fim; gravados sensibilidade_corte_fixo_%d.csv e "
             "previsoes_ablacao_sensibilidade_%d.csv" % (m, ano, ano))
