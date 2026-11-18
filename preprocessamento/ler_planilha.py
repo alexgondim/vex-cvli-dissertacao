@@ -1,10 +1,10 @@
-"""Leitor minimo de .xlsx usando so a stdlib (zipfile + ElementTree).
+"""Leitor de planilha .xlsx com a biblioteca padrão (zipfile e ElementTree).
 
-Existe porque o venv do projeto nao tem openpyxl e a tarefa e de leitura —
-instalar dependencia para uma verificacao exploratoria abriria superficie
-que o projeto trava de proposito. Cobre o que as planilhas do Bruno usam:
-sharedStrings, inlineStr, numerico, booleano e serial de data (detectado
-pelo numFmt da celula, nao por heuristica de nome de coluna).
+Cobre o que a planilha de origem usa: textos compartilhados (sharedStrings), texto em linha (inlineStr), número,
+booleano e data serial, reconhecida pelo formato numérico da célula, e não pelo nome da coluna. `ler_tabela` devolve
+o cabeçalho, as linhas e os nomes das abas. Não grava arquivo.
+
+É importado pelo `gerar_base_bairro_mes.py`.
 """
 import re
 import zipfile

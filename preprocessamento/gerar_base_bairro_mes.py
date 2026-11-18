@@ -1,26 +1,27 @@
-"""Base de eventos e base bairro-mês de CVLI em Salvador, 2018 a 2024, só do CVLI.xlsx do Bruno.
+"""Monta os registros tratados e a base por bairro e mês de CVLI em Salvador, de 2018 a 2024, a partir da
+planilha de origem.
 
-Fonte única dos eventos: data/externo/bruno_2018_2024/CVLI.xlsx. A extração da SSP não entra
-na construção; a base empilhada só é lida para conferir AISP e rótulo de bairro.
+Lê:
+- `dados/brutos/CVLI.xlsx`, aba CVLI: as colunas QTD, DATA, ANO, MES, HORA, DELITO, BAIRRO_C, SEXO e IDADE, e a
+  RISP 2025, só para conferir a RISP de cada registro;
+- `dados/geograficos/risp_por_bairro.csv`: a RISP de cada bairro;
+- `dados/geograficos/aisp_por_bairro.csv`, pelo `aisp_por_bairro.py`: a AISP de cada bairro, pela Portaria SSP
+  435/2020, Anexo I;
+- `dados/geograficos/mapeamento_bairros.csv`: a grafia de cada bairro na malha; sem malha, vale a grafia da planilha
+  em caixa de título;
+- `dados/brutos/dicionario_painel_features.csv`: a descrição e a fórmula de cada coluna da base.
 
-Tabelas de apoio:
-  RISP por bairro   POPULAÇAO.xlsx do Bruno (BAIRRO_P, RISP), 168 bairros
-  AISP por bairro   Portaria SSP 435/2020, Anexo I (data/processed/AISP_..._AnexoI.csv)
-  rótulo do bairro  grafia da malha (mapeamento_bairros.csv) ou, sem malha, a da fonte em
-                    caixa de título, como na entrega de 25/09
+A base tem 166 bairros x 84 meses (2018-01 a 2024-12); o alvo é a contagem em t+1; são 30 atributos; o turno entra
+em três proporções, com a manhã como referência; a partição é pelo ano do alvo: treino 2019 a 2022, validação 2023,
+teste 2024. Em 2018 a planilha grava idade ausente como 0, e o programa a trata como ausente.
 
-Base bairro-mês: 166 bairros x 84 meses (2018-01 a 2024-12), alvo = contagem em t+1,
-30 atributos com os nomes do dicionário do orientador. Turno em três proporções, com a
-manhã como referência. Partição pelo ano do alvo: treino 2019-2022, validação 2023, teste 2024.
+Grava em `dados/processados/`: `eventos.csv` (uma linha por vítima), `painel_bairro_mes_features.csv` (uma linha por
+bairro e mês) e `dicionario_painel_features.csv`. Confere os arquivos gravados (alvo, recontagem, proporções da
+janela) e imprime as conferências e os números da base.
 
-Saídas nesta pasta: eventos.csv, painel_bairro_mes_features.csv, dicionario_eventos.csv,
-dicionario_painel_features.csv, numeros_secao_dados.csv, o log e HASHES.tsv.
-
-Uso, da raiz do repositório: python analises/medicoes_2026-09/base_2018_2024/gerar_base_2018_2024.py
-Recusa rodar se algum arquivo de saída já existir.
+Da raiz do repositório: python preprocessamento/gerar_base_bairro_mes.py
 """
 import hashlib
-import json
 import re
 import sys
 import unicodedata
@@ -30,39 +31,27 @@ import numpy as np
 import pandas as pd
 from scipy.stats import spearmanr
 
-AQUI = Path(__file__).resolve().parent
-MED = AQUI.parent
-RAIZ = AQUI.parents[2]
-sys.path.insert(0, str(MED))
-sys.path.insert(0, str(RAIZ))
-sys.path.insert(0, str(RAIZ / "src"))
-from xlsx_min import ler_tabela                                            # noqa: E402
-from utils.aisp_crosswalk import norm, CRIME_TYPO_FIX, mapear_bairros_para_aisp  # noqa: E402
-from utils.delito_normalizer import normalize_delito                       # noqa: E402
+RAIZ = Path(__file__).resolve().parents[1]
+AQUI = RAIZ / "dados" / "processados"
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from ler_planilha import ler_tabela                                        # noqa: E402
+from aisp_por_bairro import norm, CRIME_TYPO_FIX, mapear_bairros_para_aisp  # noqa: E402
+from normalizar_natureza import normalize_delito                           # noqa: E402
 
-EXT = RAIZ / "data" / "externo" / "bruno_2018_2024"
+BRUTOS = RAIZ / "dados" / "brutos"
+GEO = RAIZ / "dados" / "geograficos"
 ENTRADAS = {
-    "CVLI.xlsx": (EXT / "CVLI.xlsx", "c377aa209a06cb24"),
-    "POPULAÇAO.xlsx": (EXT / "POPULAÇAO.xlsx", "7be2624d3a3c3d51"),
-    "AnexoI": (RAIZ / "data/processed/AISP_Salvador_bairros_Portaria435-2020_AnexoI.csv", None),
-    "mapeamento_bairros.csv": (RAIZ / "data/processed/mapeamento_bairros.csv", "bbf5f730a802a01a"),
-    "bairros_salvador.geojson": (RAIZ / "data/processed/bairros_salvador.geojson", "cda68c81dc210cb2"),
-    "dicionario_eventos (orientador)": (MED / "orientador" / "dicionario_eventos.csv", None),
-    "dicionario_painel (orientador)": (MED / "orientador" / "dicionario_painel_features.csv", None),
-    "base empilhada (conferência)": (EXT / "cvli_salvador_2018_2025_empilhada.csv", "f739055b2e3f6235"),
+    "CVLI.xlsx": (BRUTOS / "CVLI.xlsx", None),
+    "risp_por_bairro.csv": (GEO / "risp_por_bairro.csv", None),
+    "aisp_por_bairro.csv": (GEO / "aisp_por_bairro.csv", None),
+    "mapeamento_bairros.csv": (GEO / "mapeamento_bairros.csv", None),
+    "dicionario_painel_features.csv": (BRUTOS / "dicionario_painel_features.csv", None),
 }
-SAIDAS = ["eventos.csv", "painel_bairro_mes_features.csv", "dicionario_eventos.csv",
-          "dicionario_painel_features.csv", "numeros_secao_dados.csv", "gerar_base_2018_2024_resultado.txt",
-          "HASHES.tsv"]
-existentes = [s for s in SAIDAS if (AQUI / s).exists()]
-if existentes:
-    sys.exit("já existem, nada foi gravado: %s" % existentes)
-
 ANO0, ANO1 = 2018, 2024
 MESES = pd.period_range("%d-01" % ANO0, "%d-12" % ANO1, freq="M")
 LAGS = 12
 DIAS = {0: "segunda", 1: "terca", 2: "quarta", 3: "quinta", 4: "sexta", 5: "sabado", 6: "domingo"}
-# o Bruno grava o latrocínio como "ROUBO COM RESULTADO MORTE", sem o sufixo da SSP
+# a planilha grava o latrocínio como "ROUBO COM RESULTADO MORTE", sem o sufixo da SSP
 NATUREZA = {"HOMICIDIO DOLOSO": "Homicídio Doloso", "FEMINICIDIO": "Feminicídio",
             "LESAO CORPORAL SEGUIDA DE MORTE": "Lesão Corporal Seguida de Morte",
             "ROUBO COM RESULTADO MORTE": "Latrocínio", "ROUBO COM RESULTADO MORTE - LATROCINIO": "Latrocínio"}
@@ -115,7 +104,6 @@ def turno(h):
 p("== entradas ==")
 for nome, (cam, esperado) in ENTRADAS.items():
     h = sha(cam)
-    assert esperado is None or h.startswith(esperado), (nome, h)
     p("  %-32s %s" % (nome, h))
 
 cab, corpo, _ = ler_tabela(ENTRADAS["CVLI.xlsx"][0])
@@ -157,20 +145,14 @@ contrabarra = [k for k, v in rotulo.items() if "\\" in v]
 # contrabarra vira barra normal: parte dos leitores de CSV a toma como escape
 rotulo = {k: v.replace("\\", "/") for k, v in rotulo.items()}
 assert len(set(rotulo.values())) == len(rotulo) == 166
-emp = pd.read_csv(ENTRADAS["base empilhada (conferência)"][0], low_memory=False)
-ev25 = pd.read_csv(MED / "entrega_orientador_2026-09-25c" / "eventos.csv")
-rot25 = dict(zip(emp.BAIRRO_KEY, ev25.bairro))
-dif_rot = {k: (rotulo[k], rot25.get(k)) for k in chaves if rotulo[k] != rot25.get(k)}
 p()
 p("== bairros ==")
 p("  bairros: %d | grafia da malha: %d | da fonte em caixa de título: %d | contrabarra trocada: %s"
   % (len(chaves), n_malha, len(chaves) - n_malha, [rotulo[k] for k in contrabarra]))
-p("  rótulos diferentes dos da entrega de 25/09: %s" % (dif_rot or "nenhum"))
-assert not dif_rot
 
-# ── RISP pelo POPULAÇAO.xlsx ─────────────────────────────────────────────────
-cp, corp, _ = ler_tabela(ENTRADAS["POPULAÇAO.xlsx"][0])
-pop = pd.DataFrame(corp, columns=cp)
+# ── RISP pela tabela risp_por_bairro.csv ─────────────────────────────────────────────────
+pop = pd.read_csv(ENTRADAS["risp_por_bairro.csv"][0], dtype=str, keep_default_na=False)
+pop = pop.rename(columns={"bairro": "BAIRRO_P", "risp": "RISP"})
 pop["BK"] = pop.BAIRRO_P.map(bairro_key)
 assert pop.BK.is_unique and len(pop) == 168
 risp_tab = dict(zip(pop.BK, pop.RISP))
@@ -180,7 +162,7 @@ div_maj = {k: (risp_tab[k], maj[k]) for k in chaves if risp_tab.get(k) != maj[k]
 b["RISP"] = b.BK.map(risp_tab)
 div_reg = b[b.RISP != b["RISP 2025"]]
 p()
-p("== RISP (POPULAÇAO.xlsx) ==")
+p("== RISP (risp_por_bairro.csv) ==")
 p("  bairros na tabela: %d | da base sem RISP na tabela: %s | da tabela fora da base: %s"
   % (len(pop), sem_risp or "nenhum", sorted(set(pop.BK) - set(chaves))))
 p("  RISP da tabela contra a maioria por bairro do CVLI.xlsx: %d divergências em %d bairros %s"
@@ -192,8 +174,6 @@ assert not sem_risp and not div_maj
 # ── AISP pela Portaria 435/2020 ──────────────────────────────────────────────
 aisp_tab = mapear_bairros_para_aisp(chaves)
 sem_aisp = [k for k in chaves if k not in aisp_tab]
-aisp_emp = emp.groupby("BAIRRO_KEY").AISP.agg(lambda s: s.mode().iat[0])
-div_aisp = {k: (aisp_tab.get(k), aisp_emp.get(k)) for k in chaves if aisp_tab.get(k) != aisp_emp.get(k)}
 b["AISP"] = b.BK.map(aisp_tab)
 risp_por_aisp = pd.DataFrame({"aisp": [aisp_tab[k] for k in chaves], "risp": [risp_tab[k] for k in chaves],
                               "bairro": [rotulo[k] for k in chaves]})
@@ -201,13 +181,13 @@ mistas = risp_por_aisp.groupby("aisp").risp.nunique()
 mistas = mistas[mistas > 1]
 p()
 p("== AISP (Portaria SSP 435/2020, Anexo I) ==")
-p("  bairros sem AISP: %s | diferente da AISP da base empilhada: %s" % (sem_aisp or "nenhum", div_aisp or "nenhum"))
+p("  bairros sem AISP: %s" % (sem_aisp or "nenhum"))
 p("  AISP distintas: %d | cada AISP numa só RISP: %s" % (len(set(aisp_tab.values())), mistas.empty))
 for a in mistas.index:
     g = risp_por_aisp[risp_por_aisp.aisp == a]
     p("    AISP %d dividida: %s" % (a, g.groupby("risp").bairro.apply(list).to_dict()))
 p("  RISP por AISP: %s" % risp_por_aisp.groupby("aisp").risp.first().to_dict())
-assert not sem_aisp and not div_aisp
+assert not sem_aisp
 UMA_RISP = "cada AISP pertence a uma única RISP" if mistas.empty else "%d AISP estão divididas entre RISP" % len(mistas)
 
 # ── a) eventos.csv ───────────────────────────────────────────────────────────
@@ -351,7 +331,7 @@ p("  5. soma da grade = %d; soma do alvo + defasagens do primeiro mês de refer�
   % (int(X.sum()), int(G.target_cvli.sum() + G[G.m == 11][["cvli_lag%d" % k for k in range(1, 13)]].to_numpy().sum())))
 assert ok1 and ok2 and ok3 and X.sum() == 7766
 
-# ── números da seção de dados ────────────────────────────────────────────────
+# ── números da base, impressos na tela ────────────────────────────────────────────────
 ORIG_E, ORIG_G = "eventos.csv", "painel_bairro_mes_features.csv"
 for a, v in e.groupby("ano").size().items():
     num("registros", "registros em %d" % a, mil(v), ORIG_E)
@@ -370,17 +350,6 @@ num("idade", "idade vazia, total", "%s de %s (%s%%)" % (mil(e.idade_vitima.isna(
 tur = e.turno.value_counts(normalize=True)
 for t_ in ("madrugada", "manha", "tarde", "noite"):
     num("turno", "proporção geral, %s" % t_, "%s%% (%s)" % (br(100 * tur[t_]), mil((e.turno == t_).sum())), ORIG_E)
-geo = json.loads(ENTRADAS["bairros_salvador.geojson"][0].read_text(encoding="utf-8"))
-nomes = [f["properties"]["NOME_BAIRR"] for f in geo["features"]]
-chave_geo = lambda s: sem_acento(s).upper().replace("\\", "/").replace("´", "'").strip()
-base_geo = {chave_geo(v) for v in rot_b}
-sem_bairro = sorted(n_ for n_ in nomes if chave_geo(n_) not in base_geo)
-sem_poligono = sorted(v for v in rot_b if chave_geo(v) not in {chave_geo(n_) for n_ in nomes})
-iguais = sum(1 for v in rot_b if v in nomes)
-num("território", "polígonos no GeoJSON", len(nomes), "bairros_salvador.geojson")
-num("território", "polígonos sem bairro na base", "%d: %s" % (len(sem_bairro), ", ".join(sem_bairro)), "bairros_salvador.geojson x " + ORIG_E)
-num("território", "bairros da base sem polígono", len(sem_poligono), "idem")
-num("território", "rótulos iguais a NOME_BAIRR sem nenhuma troca", "%d de %d" % (iguais, len(rot_b)), "idem")
 num("território", "AISP / RISP", "%d / %d" % (len(set(aisp_b)), len(set(risp_b))), ORIG_G)
 num("território", "bairros por RISP", ", ".join("%s %d" % (k, v) for k, v in pd.Series(risp_b).value_counts().items()), ORIG_G)
 num("base bairro-mês", "células da grade", mil(X.size), "grade 166 x 84")
@@ -428,44 +397,15 @@ muda = com_ambas & (np.abs(nossa - de_origem) > 1e-9)
 pct_muda = 100 * muda.sum() / com_ambas.sum()
 num("perfil", "idade média: linhas em que a fórmula do dicionário de origem difere",
     "%s%% (%s de %s com as duas fórmulas definidas)" % (br(pct_muda), mil(muda.sum()), mil(com_ambas.sum())), ORIG_G)
-pd.DataFrame(NUM).to_csv(AQUI / "numeros_secao_dados.csv", index=False, encoding="utf-8")
 p()
-p("== números da seção de dados ==")
+p("== números da base ==")
 for r_ in NUM:
     p("  [%s] %s: %s" % (r_["secao"], r_["medida"], r_["valor"]))
 
 # ── b) e d) dicionários ──────────────────────────────────────────────────────
 N = len(e)
 n_id_vazia = int(e.idade_vitima.isna().sum())
-n_id_fonte = int(idade.isna().sum())
-nul_demais = iv.drop(2018)
-zer_demais = b[b.ANO != 2018].groupby("ANO").IDADE.apply(lambda s: int((pd.to_numeric(s, errors="coerce") == 0).sum()))
-DE = pd.read_csv(ENTRADAS["dicionario_eventos (orientador)"][0])
-aj_e = {
-    "id_ocorrencia": "Identificador sequencial gerado nesta entrega (1 a %s, em ordem cronológica; na mesma data, na ordem do CVLI.xlsx). A fonte não traz identificador próprio." % mil(N),
-    "dia_semana": "Dia da semana do crime, derivado da data. Domínio: segunda, terca, quarta, quinta, sexta, sabado, domingo.",
-    "turno": "Turno do crime, derivado da hora. A hora é inteira, de 0 a 23, como vem na fonte. Faixas do projeto: madrugada 00:00 a 05:59, manha 06:00 a 11:59, tarde 12:00 a 17:59, noite 18:00 a 23:59.",
-    "bairro": "Bairro de ocorrência. %d bairros. Grafia acentuada da malha do IBGE em %d; nos %d que a malha não traz, a grafia da fonte em caixa de título. O mesmo rótulo aparece em painel_bairro_mes_features.csv. Única alteração de grafia em relação à malha: em 'Vila Ruy Barbosa/Jardim Cruzeiro' a contrabarra da malha foi trocada por barra normal, porque parte dos leitores de CSV interpreta a contrabarra como escape." % (len(chaves), n_malha, len(chaves) - n_malha),
-    "risp": "Região Integrada de Segurança Pública do bairro: BTS, CENTRAL ou ATLÂNTICO, pela tabela bairro → RISP do POPULAÇAO.xlsx (Bruno). Um valor por bairro. Coincide com a coluna RISP 2025 do CVLI.xlsx em %s dos %s registros; os %d restantes trazem outra RISP na fonte: %s." % (
-        mil(N - len(div_reg)), mil(N), len(div_reg),
-        "; ".join("%d de %s como %s, onde a tabela dá %s" % (v, rotulo[k], rf, risp_tab[k])
-                  for (k, rf), v in div_reg.groupby(["BK", "RISP 2025"]).size().items())),
-    "tipo_crime": "Natureza específica do crime: %s." % ", ".join("%s (%s)" % (k, mil(v)) for k, v in e.tipo_crime.value_counts().items()),
-    "classificacao": "Classificação agregada. CVLI em todas as %s linhas." % mil(N),
-    "sexo_vitima": "Sexo da vítima (M/F). Vazio em %d registro%s. Atributo do evento: no modelo entra só agregado na janela histórica (prop_masc_hist12)." % (int(e.sexo_vitima.isna().sum()), "" if e.sexo_vitima.isna().sum() == 1 else "s"),
-    "idade_vitima": "Idade da vítima. Vazia em %s registros: %s sem idade na fonte e %d de 2018 gravados como zero. Em 2018 a fonte gravou idade ausente como 0 (naquele ano: 0 nulos e %d zeros; nos demais, %d a %d nulos e no máximo %d zeros), e esses %d são tratados como ausentes aqui e na base bairro-mês. Entra no modelo só agregada (idade_media_hist12)." % (mil(n_id_vazia), mil(n_id_fonte), int(zero_2018.sum()), int(zero_2018.sum()), nul_demais.min(), nul_demais.max(), zer_demais.max(), int(zero_2018.sum())),
-}
-linhas_e = []
-for _, r_ in DE.iterrows():
-    linhas_e.append({"coluna": r_.coluna, "tipo": r_.tipo, "descricao": aj_e.get(r_.coluna, r_.descricao)})
-    if r_.coluna == "risp":
-        linhas_e.append({"coluna": "aisp", "tipo": "inteiro (1-16)",
-                         "descricao": "Área Integrada de Segurança Pública do bairro, pela Portaria SSP 435/2020 (Anexo I). Coluna acrescentada ao dicionário de origem, por decisão do orientador. %d AISP; %s." % (len(set(aisp_b)), UMA_RISP)})
-DE2 = pd.DataFrame(linhas_e)
-assert list(DE2.coluna) == list(e.columns)
-DE2.to_csv(AQUI / "dicionario_eventos.csv", index=False, encoding="utf-8")
-
-DP = pd.read_csv(ENTRADAS["dicionario_painel (orientador)"][0])
+DP = pd.read_csv(ENTRADAS["dicionario_painel_features.csv"][0])
 n_vazia = int(n0.sum())
 aj_p = {    # coluna: (descrição, fórmula); None mantém o texto do dicionário de origem
     "bairro": ("Bairro ao qual a observação se refere. %d bairros, com a mesma grafia de eventos.csv. Única alteração de grafia em relação à malha do IBGE: em 'Vila Ruy Barbosa/Jardim Cruzeiro' a contrabarra foi trocada por barra normal, porque parte dos leitores de CSV interpreta a contrabarra como escape." % len(chaves), None),
@@ -485,7 +425,7 @@ for _, r_ in DP.iterrows():
     if col == "prop_noturno_hist12":
         for nome_t, faixa in TURNOS:
             linhas_p.append({"coluna": "prop_%s_hist12" % nome_t, "grupo": grupo,
-                             "descricao": "Proporção de CVLI no turno da %s (%s) na janela de 12 meses, com a hora inteira, de 0 a 23, tomada como hora cheia. A manhã (06:00 a 11:59) fica fora, como referência. Substitui prop_noturno_hist12 do dicionário de origem, por decisão do orientador. Vazia quando n_vitimas_hist12 = 0 (%s de %s linhas)." % (nome_t, faixa, mil(n_vazia), mil(len(G))),
+                             "descricao": "Proporção de CVLI no turno da %s (%s) na janela de 12 meses, com a hora inteira, de 0 a 23, tomada como hora cheia. A manhã (06:00 a 11:59) fica fora, como referência. Substitui prop_noturno_hist12 do dicionário de origem. Vazia quando n_vitimas_hist12 = 0 (%s de %s linhas)." % (nome_t, faixa, mil(n_vazia), mil(len(G))),
                              "formula_ou_calculo": "(Σ CVLI no turno da %s nos últimos 12 meses) / (Σ CVLI nos últimos 12 meses)" % nome_t,
                              "disponivel_no_momento_da_previsao": disp})
         continue
@@ -497,24 +437,13 @@ for _, r_ in DP.iterrows():
                      "disponivel_no_momento_da_previsao": disp})
     if col == "risp":
         linhas_p.append({"coluna": "aisp", "grupo": "Espacial",
-                         "descricao": "AISP do bairro (%d AISP, Portaria SSP 435/2020, Anexo I). Coluna acrescentada ao dicionário de origem, por decisão do orientador: bairro, aisp e risp entram juntos no bloco espacial. Constante por bairro; %s." % (len(set(aisp_b)), UMA_RISP),
+                         "descricao": "AISP do bairro (%d AISP, Portaria SSP 435/2020, Anexo I). Coluna acrescentada ao dicionário de origem: bairro, aisp e risp entram juntos no bloco espacial. Constante por bairro; %s." % (len(set(aisp_b)), UMA_RISP),
                          "formula_ou_calculo": np.nan, "disponivel_no_momento_da_previsao": "Sim"})
 DP2 = pd.DataFrame(linhas_p)
 assert list(DP2.coluna) == list(F.columns), (list(DP2.coluna), list(F.columns))
 DP2.to_csv(AQUI / "dicionario_painel_features.csv", index=False, encoding="utf-8")
-txt = (AQUI / "dicionario_eventos.csv").read_text(encoding="utf-8") + (AQUI / "dicionario_painel_features.csv").read_text(encoding="utf-8")
+txt = (AQUI / "dicionario_painel_features.csv").read_text(encoding="utf-8")
 assert "0h-" not in txt and "painel congelado" not in txt
 p()
 p("== dicionários ==")
-p("  dicionario_eventos.csv: %d linhas | dicionario_painel_features.csv: %d linhas, na ordem das colunas do arquivo"
-  % (len(DE2), len(DP2)))
-
-(AQUI / "gerar_base_2018_2024_resultado.txt").write_text("\n".join(out) + "\n", encoding="utf-8")
-reg = ["arquivo\tpapel\tbytes\tsha256"]
-for nome, (cam, _) in ENTRADAS.items():
-    reg.append("%s\tentrada\t%d\t%s" % (cam.relative_to(RAIZ).as_posix(), cam.stat().st_size, sha(cam)))
-reg.append("%s\tscript\t%d\t%s" % (Path(__file__).name, Path(__file__).stat().st_size, sha(__file__)))
-for s in SAIDAS[:-1]:
-    reg.append("%s\tsaida\t%d\t%s" % (s, (AQUI / s).stat().st_size, sha(AQUI / s)))
-(AQUI / "HASHES.tsv").write_text("\n".join(reg) + "\n", encoding="utf-8", newline="\n")
-print("\n".join(reg))
+p("  dicionario_painel_features.csv: %d linhas, na ordem das colunas do arquivo" % len(DP2))

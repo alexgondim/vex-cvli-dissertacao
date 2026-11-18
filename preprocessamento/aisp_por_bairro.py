@@ -1,34 +1,12 @@
-"""
-Correspondência bairro -> AISP (Área Integrada de Segurança Pública,
-Portaria SSP 435/2020, Anexo I) e agregação de valores SHAP por AISP.
+"""Correspondência entre bairro e AISP (Área Integrada de Segurança Pública), pela Portaria SSP 435/2020, Anexo I,
+e funções de agregação por AISP.
 
-Extraído de analises/agregacao_shap_aisp.py (2026-08-16) para reuso pelo
-painel -- os dicts de correção, a normalização de nome e a lógica de
-merge/agregação são os mesmos, só isolados em função pura. O script de
-linha de comando continua funcionando, agora importando daqui em vez de
-duplicar a lógica.
+Lê `dados/geograficos/aisp_por_bairro.csv`, a tabela do Anexo I, com BOM e corpo em UTF-8; uma linha que não seja
+UTF-8 válido é lida como latin-1, com aviso. Os nomes são comparados depois de normalizar caixa, acento e espaços.
+Um erro de digitação dos registros é corrigido (`CRIME_TYPO_FIX`), e 5 nomes ausentes da tabela recebem a AISP por
+citação direta da Portaria (`AISP_CORRESPONDENCIA_NORMATIVA`). Não grava arquivo.
 
-CORRECAO DE CODIFICACAO (2026-08-17): a versao anterior deste modulo
-lia o CSV com `encoding="latin-1"` e corrigia 21 nomes de bairro
-"corrompidos" via dict de excecao (AISP_MOJIBAKE_FIX). Investigacao dos
-bytes brutos mostrou que a premissa estava errada -- o corpo do arquivo
-e UTF-8 legitimo (mesma codificacao do BOM no inicio do arquivo), nao
-uma mistura de latin-1 com pontos corrompidos. Ler o arquivo inteiro
-como UTF-8 resolve as 21 entradas do dict SEM excecao nenhuma (141/141
-bairros da matriz SHAP encontram AISP so com normalizacao de forma +
-o 1 typo real da base criminal + os 2 bairros com citacao normativa
-direta) -- e revela 3 nomes de AISP (Sao Caetano, Valeria, Itapua) que
-tambem vinham corrompidos e nunca tinham sido notados, porque so
-apareciam em texto de relatorio/console, nunca como rotulo de grafico.
-AISP_MOJIBAKE_FIX foi removido; _decode_csv_bytes() abaixo tenta UTF-8
-no arquivo inteiro e cai para latin-1 por linha (nao silenciosamente)
-só se alguma linha realmente não for UTF-8 valido -- protege contra o
-arquivo voltar a ficar misto no futuro, sem depender de caso resolvido
-a mao.
-
-CRITÉRIO DE CORRESPONDÊNCIA DE NOMES (declarado, não aproximado) -- ver
-docstring original em analises/agregacao_shap_aisp.py para a investigação
-caso a caso do typo e das 2 citações normativas restantes.
+É importado pelo `gerar_base_bairro_mes.py`, que usa `norm`, `CRIME_TYPO_FIX` e `mapear_bairros_para_aisp`.
 """
 import io
 import re
@@ -39,8 +17,8 @@ from typing import Dict, List
 
 import pandas as pd
 
-_BASE = Path(__file__).parent.parent.parent
-AISP_CSV = _BASE / "data" / "processed" / "AISP_Salvador_bairros_Portaria435-2020_AnexoI.csv"
+_BASE = Path(__file__).resolve().parents[1]
+AISP_CSV = _BASE / "dados" / "geograficos" / "aisp_por_bairro.csv"
 
 # 1 erro de digitacao na base criminal (nao na AISP) -- a grafia "Jadim
 # Cruzeiro" reproduz fielmente o Anexo I da Portaria 435/2020 conforme
