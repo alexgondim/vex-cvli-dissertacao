@@ -7,3 +7,26 @@ __pycache__/
 venv/
 Thumbs.db
 desktop.ini
+# Arquivos de apoio que os programas gravam ao rodar e que não fazem parte do repositório.
+resultados/ablacao.csv
+resultados/ablacao_blocos_resumo.json
+resultados/busca_configuracoes.csv
+resultados/busca_ranking.csv
+resultados/contribuicoes_MD_2024.csv
+resultados/estimativas_corte_fixo.csv
+resultados/importancia_MD_2023.csv
+resultados/importancia_MD_2024.csv
+resultados/interacoes_2024.csv
+resultados/previsoes_ablacao_blocos2_2023.csv
+resultados/previsoes_ablacao_blocos2_2024.csv
+resultados/previsoes_ablacao_sensibilidade_2024.csv
+resultados/previsoes_busca.csv
+resultados/previsoes_teste.csv
+resultados/resumo_MD.json
+resultados/sensibilidade_me_contribuicoes_2023.csv
+resultados/sensibilidade_mg_contribuicoes_2023.csv
+resultados/sensibilidade_peso_espacial.csv
+resultados/sensibilidade_previsoes_dobras_2023.csv
+resultados/sensibilidade_variantes_importancia_2023.csv
+resultados/validacao_binomial_negativa.json
+resultados/ensaio/

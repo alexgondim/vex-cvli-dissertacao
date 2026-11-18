@@ -1,4 +1,2 @@
 # Bytes idênticos em qualquer clone: nenhuma conversão de fim de linha.
-# Os hashes registrados nos protocolos, nas tabelas de congelamento e no
-# HASHES.tsv da base são os dos bytes como estão aqui (LF e CRLF misturados).
 * -text
