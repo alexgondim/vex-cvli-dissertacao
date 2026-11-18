@@ -1,0 +1,33 @@
+coluna,grupo,descricao,formula_ou_calculo,disponivel_no_momento_da_previsao
+bairro,Espacial (identificação),Bairro ao qual a observação se refere.,,Sim
+risp,Espacial,RISP (Região Integrada de Segurança Pública) do bairro.,,Sim
+ano_ref,Identificação/auditoria,"Ano do mês de referência t (último mês observado antes do alvo). Útil para rastrear a linha, normalmente não entra como feature (ver year_norm_alvo).",,Sim
+mes_ref,Identificação/auditoria,Mês de referência t (1-12). Não é preditor direto; os lags já carregam a informação temporal do histórico.,,Sim
+ano_alvo,Identificação/auditoria,"Ano do mês que está sendo previsto (t+1). Mantido para rastreabilidade; para o modelo, prefira year_norm_alvo.",,Sim (mês-alvo é definido antes da previsão)
+mes_alvo,Temporal,"Mês (1-12) que está sendo previsto (t+1). É conhecido de antemão (você decide prever, por ex., fevereiro/2024) — não há vazamento.",,Sim
+month_sin_alvo,Temporal (sazonalidade),Componente seno da codificação cíclica do mês-alvo — evita que dezembro e janeiro pareçam distantes.,sin(2*pi*mes_alvo/12),Sim
+month_cos_alvo,Temporal (sazonalidade),Componente cosseno da codificação cíclica do mês-alvo.,cos(2*pi*mes_alvo/12),Sim
+year_norm_alvo,Temporal (tendência),"Ano do mês-alvo normalizado em [0,1] para ajudar o modelo a captar tendência de longo prazo sem tratar o ano como categoria.",(ano_alvo - ano_min) / (ano_max - ano_min),Sim
+time_index,Temporal (tendência),"Índice sequencial do mês de referência dentro da série do bairro (0,1,2,...). Alternativa/complemento a year_norm_alvo para tendência.",,Sim
+cvli_lag1,Criminal (histórico CVLI),"Nº de CVLI ocorridos no bairro 1 mês(es) antes do mês-alvo (lag1). Equivale ao mês de referência t, já totalmente encerrado quando a previsão é feita.",CVLI observado em t-0,Sim (dado já ocorrido)
+cvli_lag2,Criminal (histórico CVLI),Nº de CVLI ocorridos no bairro 2 mês(es) antes do mês-alvo (lag2).,CVLI observado em t-1,Sim (dado já ocorrido)
+cvli_lag3,Criminal (histórico CVLI),Nº de CVLI ocorridos no bairro 3 mês(es) antes do mês-alvo (lag3).,CVLI observado em t-2,Sim (dado já ocorrido)
+cvli_lag4,Criminal (histórico CVLI),Nº de CVLI ocorridos no bairro 4 mês(es) antes do mês-alvo (lag4).,CVLI observado em t-3,Sim (dado já ocorrido)
+cvli_lag5,Criminal (histórico CVLI),Nº de CVLI ocorridos no bairro 5 mês(es) antes do mês-alvo (lag5).,CVLI observado em t-4,Sim (dado já ocorrido)
+cvli_lag6,Criminal (histórico CVLI),Nº de CVLI ocorridos no bairro 6 mês(es) antes do mês-alvo (lag6).,CVLI observado em t-5,Sim (dado já ocorrido)
+cvli_lag7,Criminal (histórico CVLI),Nº de CVLI ocorridos no bairro 7 mês(es) antes do mês-alvo (lag7).,CVLI observado em t-6,Sim (dado já ocorrido)
+cvli_lag8,Criminal (histórico CVLI),Nº de CVLI ocorridos no bairro 8 mês(es) antes do mês-alvo (lag8).,CVLI observado em t-7,Sim (dado já ocorrido)
+cvli_lag9,Criminal (histórico CVLI),Nº de CVLI ocorridos no bairro 9 mês(es) antes do mês-alvo (lag9).,CVLI observado em t-8,Sim (dado já ocorrido)
+cvli_lag10,Criminal (histórico CVLI),Nº de CVLI ocorridos no bairro 10 mês(es) antes do mês-alvo (lag10).,CVLI observado em t-9,Sim (dado já ocorrido)
+cvli_lag11,Criminal (histórico CVLI),Nº de CVLI ocorridos no bairro 11 mês(es) antes do mês-alvo (lag11).,CVLI observado em t-10,Sim (dado já ocorrido)
+cvli_lag12,Criminal (histórico CVLI),Nº de CVLI ocorridos no bairro 12 mês(es) antes do mês-alvo (lag12).,CVLI observado em t-11,Sim (dado já ocorrido)
+cvli_ma3,Criminal (histórico CVLI),Média móvel de CVLI nos últimos 3 meses antes do alvo.,"média(cvli_lag1, cvli_lag2, cvli_lag3)",Sim
+cvli_ma6,Criminal (histórico CVLI),Média móvel de CVLI nos últimos 6 meses antes do alvo.,média(cvli_lag1..cvli_lag6),Sim
+cvli_ma12,Criminal (histórico CVLI),Média móvel de CVLI nos últimos 12 meses antes do alvo.,média(cvli_lag1..cvli_lag12),Sim
+cvli_trend,Criminal (histórico CVLI),Variação recente de CVLI: mês imediatamente anterior menos o mês anterior a esse.,cvli_lag1 - cvli_lag2,Sim
+n_vitimas_hist12,Perfil histórico (suporte amostral),"Número de vítimas de CVLI acumuladas na mesma janela móvel de até 12 meses usada para calcular prop_noturno_hist12, prop_fds_hist12, prop_masc_hist12 e idade_media_hist12 — é o denominador comum dessas quatro colunas. Indica o quão confiável é cada proporção/média: uma proporção calculada sobre poucos casos (n baixo) é muito mais ruidosa do que a mesma proporção calculada sobre muitos casos. Quando n_vitimas_hist12 = 0, as quatro colunas de perfil ficam NaN (sem histórico de vítimas na janela) — o valor 0 aqui explica o motivo do NaN nelas.",Σ CVLI nos últimos até 12 meses anteriores ao alvo (mesma janela de prop_masc_hist12 etc.),Sim
+prop_noturno_hist12,Perfil histórico (turno) — tratamento de vazamento,"Proporção de CVLI ocorridos em turno noturno/madrugada, calculada sobre os últimos até 12 meses ANTERIORES ao alvo. Substitui o uso direto do turno do crime futuro (que não existe no momento da previsão).",(Σ CVLI noturnos nos últimos 12 meses) / (Σ CVLI nos últimos 12 meses),Sim
+prop_fds_hist12,Perfil histórico (dia da semana) — tratamento de vazamento,"Proporção de CVLI ocorridos em sábado/domingo, calculada sobre os últimos até 12 meses anteriores ao alvo. Substitui o uso direto do dia da semana do crime futuro.",(Σ CVLI em fim de semana nos últimos 12 meses) / (Σ CVLI nos últimos 12 meses),Sim
+prop_masc_hist12,Perfil histórico (sexo da vítima) — tratamento de vazamento,Proporção histórica de vítimas do sexo masculino nos últimos até 12 meses anteriores ao alvo. Nunca usa o sexo da vítima do crime que está sendo previsto.,(Σ vítimas masculinas nos últimos 12 meses) / (Σ vítimas nos últimos 12 meses),Sim
+idade_media_hist12,Perfil histórico (idade da vítima) — tratamento de vazamento,Idade média das vítimas de CVLI nos últimos até 12 meses anteriores ao alvo.,(Σ idades nos últimos 12 meses) / (Σ vítimas nos últimos 12 meses),Sim
+target_cvli,Alvo (variável a prever),Número de CVLI ocorridos no bairro no mês-alvo (t+1). É a variável y para o XGBoost.,,Não — é o que o modelo deve prever
