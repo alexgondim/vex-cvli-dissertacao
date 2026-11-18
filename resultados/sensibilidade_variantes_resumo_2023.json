@@ -2,7 +2,7 @@
  "ano": 2023,
  "forma": "dobras_2023",
  "escala": "log da contagem esperada",
- "tau_b": "kendalltau(variant='b') entre as médias do valor absoluto dos 27 não espaciais da variante e as do M4 da Parte 1 (sensibilidade_importancia.csv)",
+ "tau_b": "kendalltau(variant='b') entre as médias do valor absoluto dos 27 não espaciais da variante e as do M4 do sensibilidade_dobras_2023.py (sensibilidade_importancia.csv)",
  "peso_espacial": "soma das médias do valor absoluto dos atributos espaciais da variante dividida pela soma das médias de todos os atributos dela",
  "variantes": {
   "ME": {
